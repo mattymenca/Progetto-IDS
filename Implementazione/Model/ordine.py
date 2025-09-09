@@ -1,8 +1,9 @@
 import StatoOrdine
+from ProdottoOrdinato import ProdottoOrdinato
 
 class Ordine:
 
-    def __init__(self, id, prodottiOrdinati, numeroCoperti, statoOrdine: StatoOrdine):
+    def __init__(self, id, prodottiOrdinati: list[ProdottoOrdinato], numeroCoperti, statoOrdine:StatoOrdine):
         self.id = id
         self.prodottiOrdinati = prodottiOrdinati
         self.numeroCoperti = numeroCoperti
@@ -20,10 +21,10 @@ class Ordine:
     def getProdottiOrdinati(self):
         return self.prodottiOrdinati
     
-    def aggiungiProdotto(self, prodottoOrdinato):
+    def aggiungiProdotto(self, prodottoOrdinato: list[ProdottoOrdinato]):
         self.getProdottiOrdinati.append(prodottoOrdinato)
 
-    def rimuoviProdotto(self, prodottoOrdinato):
+    def rimuoviProdotto(self, prodottoOrdinato: list[ProdottoOrdinato]):
         self.getProdottiOrdinati.remove(prodottoOrdinato)
 
     def setNumeroCoperti(self, numeroCoperti):

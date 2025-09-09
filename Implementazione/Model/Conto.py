@@ -17,8 +17,8 @@ class Conto:
         return self.metodoPagamento
     
     def calcolaTotale(self):
-        for ordine in self.ordini:
-            for prodotto in prodottiOrdinati:
+        
+        for prodotto in prodottiOrdinati:
                 totale += prodotto.getPrezzo * prodotto.getQuantitaOrdinata
                 
     def setMetodoPagamento(self, nuovoMetodoPagamento: MetodoPagamento):
