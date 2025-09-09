@@ -2,7 +2,7 @@ import StatoOrdine
 
 class Ordine:
 
-    def __init__(self, id, prodottiOrdinati, numeroCoperti, statoOrdine:StatoOrdine):
+    def __init__(self, id, prodottiOrdinati, numeroCoperti, statoOrdine: StatoOrdine):
         self.id = id
         self.prodottiOrdinati = prodottiOrdinati
         self.numeroCoperti = numeroCoperti

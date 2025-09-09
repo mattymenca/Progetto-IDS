@@ -1,12 +1,11 @@
-import MetodoPagamento
+from MetodoPagamento import MetodoPagamento
 
-class Conto():
-    totale = 0
+class Conto:
     
-    def __init__(self, idOrdine, metodoPagamento: MetodoPagamento, ordini):
+    def __init__(self, idOrdine, metodoPagamento: MetodoPagamento):
         self.idOrdine = idOrdine
         self.metodoPagamento = metodoPagamento
-        self.ordini = ordini
+        self.totale = 0
         
     def getIdOrdine(self):
         return self.idOrdine
