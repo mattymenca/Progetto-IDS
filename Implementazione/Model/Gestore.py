@@ -2,6 +2,7 @@ from StatoOrdine import StatoOrdine
 from Ordine import Ordine
 from Magazzino import Magazzino
 from Prodotto import Prodotto
+
 class Gestore:
     
     @staticmethod
@@ -9,8 +10,9 @@ class Gestore:
         for prodottoOrdinato in ordine.getProdottiOrdinati():
             nomeProdotto = prodottoOrdinato.getNome()
             if prodottoOrdinato.getQuantita() > magazzino.prodottoDaInventario(nomeProdotto).getQuantita():
-                impostaStatoOrdine("non approvato")
+                Gestore.impostaStatoOrdine("non approvato")
                 return False
+        Gestore.impostaStatoOrdine("in corso")
         return True
     
     # @staticmethod
