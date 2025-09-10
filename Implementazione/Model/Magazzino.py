@@ -13,3 +13,8 @@ class Magazzino():
     
     def rimuoviProdotto(self, prodottoDaRimuovere: Prodotto):
         self.inventario.remove(prodottoDaRimuovere)
+        
+    def prodottoDaInventario(self, nomeProdotto) -> Prodotto: 
+        for prodotto in self.inventario:
+            if nomeProdotto == prodotto.getNomeProdotto():
+                return prodotto
