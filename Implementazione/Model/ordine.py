@@ -1,4 +1,4 @@
-import StatoOrdine
+from StatoOrdine import StatoOrdine
 from ProdottoOrdinato import ProdottoOrdinato
 
 class Ordine:
@@ -30,5 +30,5 @@ class Ordine:
     def setNumeroCoperti(self, numeroCoperti):
         self.numeroCoperti = numeroCoperti
 
-    def setStato(self, statoOrdine:StatoOrdine):
+    def setStato(self, statoOrdine: StatoOrdine):
         self.statoOrdine = statoOrdine
