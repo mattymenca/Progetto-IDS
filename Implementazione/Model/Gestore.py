@@ -5,18 +5,12 @@ from Prodotto import Prodotto
 import pickle
 
 class Dati:
-    def setOrdini(self, ordini):
-        pass
-    def setContratti(self, contratti):
-        pass
-    def setMagazzino(self, magazzino):
-        pass
-    def setDipendenti(self, dipendenti):
-        pass
-    def setManager(self, manager):
-        pass
-    def salvaTutto(self):
-        pickle.dump(self)
+    def salvaTutto(self, nomefile):
+        try:
+            with open(nomefile, "wb") as file:
+                pickle.dump(self, file)
+        except (IOError, pickle.PicklingError) as e:
+            print(f"Errore nel salvataggio dei dati: {e}")
         pass
 
 class Gestore:
@@ -40,4 +34,3 @@ class Gestore:
     @staticmethod
     def impostaStatoOrdine(ordine: Ordine, stato: StatoOrdine):
         ordine.setStato(stato)
-    
