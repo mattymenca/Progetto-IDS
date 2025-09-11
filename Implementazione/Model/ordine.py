@@ -21,11 +21,11 @@ class Ordine:
     def getProdottiOrdinati(self):
         return self.prodottiOrdinati
     
-    def aggiungiProdotto(self, prodottoOrdinato: list[ProdottoOrdinato]):
-        self.getProdottiOrdinati.append(prodottoOrdinato)
+    def aggiungiProdotto(self, prodottoOrdinato: ProdottoOrdinato):
+        self.prodottiOrdinati.append(prodottoOrdinato)
 
     def rimuoviProdotto(self, prodottoOrdinato: list[ProdottoOrdinato]):
-        self.getProdottiOrdinati.remove(prodottoOrdinato)
+        self.prodottiOrdinati.remove(prodottoOrdinato)
 
     def setNumeroCoperti(self, numeroCoperti):
         self.numeroCoperti = numeroCoperti

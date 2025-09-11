@@ -1,5 +1,5 @@
 from MetodoPagamento import MetodoPagamento
-from Ordine import Ordine
+from ordine import Ordine
 
 class Conto:
     
