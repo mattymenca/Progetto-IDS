@@ -78,10 +78,6 @@ class Gestore:
         prodotto.setStatoProdotto(statoProdotto)
         
     @staticmethod
-    def salvaMagazzino(magazzino: Magazzino, dati: Dati):
-        dati.prodotti.extend(magazzino.getInventario())
-    
-    @staticmethod
     def eliminaProdotto(nomeProdotto: str, magazzino: Magazzino):
         inventario = magazzino.getInventario()
         for prodotto in magazzino.inventario:
@@ -91,8 +87,29 @@ class Gestore:
         return False
         
     @staticmethod
-    def salvaContratto(contratto: Contratto, dati: Dati):
+    def aggiungiContratto(contratto: Contratto, dati: Dati):
         dati.contratti.append(contratto)
     
-    def salvaDipendente(dipendente: Dipendente, dati: Dati):
+    @staticmethod
+    def aggiungiDipendente(dipendente: Dipendente, dati: Dati): 
         dati.dipendenti.append(dipendente)
+    
+    @staticmethod
+    def eliminaContratto(contratto: Contratto, dati: Dati):
+        if contratto in dati.contratti:
+            dati.contratti.remove(contratto)
+            return True
+        return False
+    
+    @staticmethod
+    def eliminaDipendente(dipendente: Dipendente, dati: Dati):
+        if dipendente in dati.dipendenti:
+            dati.dipendenti.remove(dipendente)
+            return True
+        return False
+    
+    @staticmethod
+    def validaCredenziali(nomeUtente, password):
+        pass 
+    #da finire
+    

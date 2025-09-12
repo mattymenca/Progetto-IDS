@@ -18,5 +18,5 @@ class Dipendente(Persona):
     def modificaStatoDipendente(self, statoDipendente: StatoDipendente):
         self.statoDipendente = statoDipendente
 
-    def aggiungiContratto(self, contratto: Contratto):
-        self.getStoricoContratti.append(contratto)
+    def aggiungiContrattoAlloStorico(self, contratto: Contratto):
+        self.storicoContratti.append(contratto)
