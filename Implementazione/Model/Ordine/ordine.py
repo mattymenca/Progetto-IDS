@@ -1,5 +1,5 @@
-from StatoOrdine import StatoOrdine
-from ProdottoOrdinato import ProdottoOrdinato
+from Implementazione.Model.Ordine.StatoOrdine import StatoOrdine
+from Implementazione.Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
 
 class Ordine:
 

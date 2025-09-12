@@ -1,4 +1,4 @@
-from StatoProdotto import StatoProdotto
+from Implementazione.Model.Magazzino.StatoProdotto import StatoProdotto
 
 class Prodotto:
     
