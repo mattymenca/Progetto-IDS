@@ -1,4 +1,4 @@
-from Implementazione.Model.Magazzino.Prodotto import Prodotto
+from .Prodotto import Prodotto
 
 class Magazzino():
     

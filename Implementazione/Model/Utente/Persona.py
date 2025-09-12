@@ -1,4 +1,4 @@
-from Ordine import Ordine
+from Model.Ordine.ordine import Ordine
 class Persona:
 
     def __init__(self, nome, cognome, eta, ordini:list[Ordine]):

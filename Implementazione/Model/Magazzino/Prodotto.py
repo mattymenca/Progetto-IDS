@@ -1,4 +1,4 @@
-from Implementazione.Model.Magazzino.StatoProdotto import StatoProdotto
+from .StatoProdotto import StatoProdotto
 
 class Prodotto:
     
@@ -12,7 +12,7 @@ class Prodotto:
         self.soglia = soglia
         self.statoProdotto = "rifornito"
         
-    def getNome(self):
+    def getNomeProdotto(self):
         return self.nome
 
     def getQuantita(self):

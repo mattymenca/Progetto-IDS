@@ -1,21 +1,21 @@
-from Implementazione.Model.Ordine.StatoOrdine import StatoOrdine
-from Implementazione.Model.Ordine.ordine import Ordine
-from Implementazione.Model.Magazzino.Magazzino import Magazzino
-from Implementazione.Model.Magazzino.Prodotto import Prodotto
+from .Ordine.StatoOrdine import StatoOrdine
+from .Ordine.ordine import Ordine
+from .Magazzino.Magazzino import Magazzino
+from .Magazzino.Prodotto import Prodotto
 import pickle
-from Implementazione.Model.Conto.Conto import Conto
-from Implementazione.Model.Conto.MetodoPagamento import MetodoPagamento
-from Implementazione.Model.Magazzino.StatoProdotto import StatoProdotto
-from Implementazione.Model.Utente.Contratto import Contratto
-from Implementazione.Model.Utente.Dipendente import Dipendente
-from  Implementazione.Model.Utente.Manager import Manager
+from .Conto.Conto import Conto
+from .Conto.MetodoPagamento import MetodoPagamento
+from .Magazzino.StatoProdotto import StatoProdotto
+from .Utente.Contratto import Contratto
+from .Utente.Dipendente import Dipendente
+from .Utente.Manager import Manager
 class Dati:
     def __init__(self):
         self.ordini = []
         self.contratti = []
         self.dipendenti = []
         self.prodotti = []
-        self.manager
+        self.manager = None
         
     def salvaTutto(self, nomeFile):
         try:

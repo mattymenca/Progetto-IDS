@@ -1,6 +1,6 @@
-import StatoDipendente
-from Contratto import Contratto
-from Persona import Persona
+from .StatoDipendente import StatoDipendente
+from .Contratto import Contratto
+from .Persona import Persona
 
 class Dipendente(Persona):
 

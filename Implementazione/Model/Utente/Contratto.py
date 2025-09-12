@@ -1,4 +1,4 @@
-from TipoContratto import TipoContratto
+from .TipoContratto import TipoContratto
 
 class Contratto:
 
