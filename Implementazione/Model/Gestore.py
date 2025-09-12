@@ -8,21 +8,30 @@ from MetodoPagamento import MetodoPagamento
 from StatoProdotto import StatoProdotto
 from Contratto import Contratto
 from Dipendente import Dipendente
+from Manager import Manager
 class Dati:
     def __init__(self):
         self.ordini = []
         self.contratti = []
         self.dipendenti = []
         self.prodotti = []
+        self.manager
         
-    def salvaTutto(self, nomefile):
+    def salvaTutto(self, nomeFile):
         try:
-            with open(nomefile, "wb") as file:
+            with open(nomeFile, "wb") as file:
                 pickle.dump(self, file)
         except (IOError, pickle.PicklingError) as e:
             print(f"Errore nel salvataggio dei dati: {e}")
         pass
     
+    def caricaDati(self, nomeFile):
+        try:
+            with open(nomeFile, "rb") as file:
+                dati = pickle.load(file)
+        except (IOError, pickle.UnpicklingError) as e:
+            print(f"Errore nel caricamento dei dati: {e}")
+            
 class Gestore:
     @staticmethod
     def approvaOrdine(ordine: Ordine, magazzino: Magazzino) -> bool:
@@ -30,8 +39,10 @@ class Gestore:
             nomeProdotto = prodottoOrdinato.getNome()
             if prodottoOrdinato.getQuantita() > magazzino.prodottoDaInventario(nomeProdotto).getQuantita():
                 Gestore.impostaStatoOrdine("non approvato")
+                print("Ordine non approvato\n")
                 return False
         Gestore.impostaStatoOrdine("in corso")
+        print("Ordine in corso\n")
         return True
     
     # @staticmethod
@@ -109,7 +120,25 @@ class Gestore:
         return False
     
     @staticmethod
-    def validaCredenziali(nomeUtente, password):
-        pass 
-    #da finire
+    def cambiaManager(manager: Manager, dati: Dati):
+        if not dati.manager is manager:
+            dati.manager = manager
+    
+    @staticmethod
+    def validaCredenziali(nome, password, dati: Dati):
+        if nome != dati.manager.nome or password != dati.manager.password:
+            print("Credenziali errate\n")
+            return False
+        return True
+    
+    @staticmethod
+    def modificaCredenziali(nome, password, nuovaPassword, dati: Dati):
+        if Gestore.validaCredenziali(nome, password) == False:
+            print("Reinserire nome e password")
+            return False
+        
+        dati.manager.password = nuovaPassword
+        print("password modificata")
+        return True
+    
     
