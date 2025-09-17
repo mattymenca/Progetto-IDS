@@ -69,7 +69,7 @@ class Gestore:
     @staticmethod
     def eliminaOrdine(idOrdine: int, ordini: list[Ordine]):
         for ordine in ordini:
-            if idOrdine == ordine.getId:
+            if idOrdine == ordine.getId():
                 ordini.remove(ordine)    
     
     @staticmethod     
@@ -141,4 +141,24 @@ class Gestore:
         print("password modificata")
         return True
     
+    def cercaDipendente(dati: Dati, dipendente: Dipendente):
+        for d in dati.dipendenti():
+            if d.nome == dipendente.nome and d.cognome = dipendente.cognome:
+                return d
+        return None
+    
+    @staticmethod
+    def modificaDettagliDipendente(dati: Dati, dipendente: Dipendente, **kwargs):
+        d = Gestore.cercaDipendente(dipendente)
+        
+        if d is None:
+            return False
+        
+        for chiave, valore in kwargs:
+            if hasattr(d, chiave):
+                setattr(d, chiave, valore)
+                return True
+            else:
+                print("Attributo non esistente")
+                return False
     
