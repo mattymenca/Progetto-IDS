@@ -1,5 +1,5 @@
-from Implementazione.Model.Conto.MetodoPagamento import MetodoPagamento
-from Implementazione.Model.Ordine.ordine import Ordine
+from .MetodoPagamento import MetodoPagamento
+from Model.Ordine.ordine import Ordine
 
 class Conto:
     
