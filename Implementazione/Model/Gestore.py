@@ -143,7 +143,7 @@ class Gestore:
     
     def cercaDipendente(dati: Dati, dipendente: Dipendente):
         for d in dati.dipendenti():
-            if d.nome == dipendente.nome and d.cognome = dipendente.cognome:
+            if d.nome == dipendente.nome and d.cognome == dipendente.cognome:
                 return d
         return None
     
