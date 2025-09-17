@@ -148,7 +148,7 @@ class Gestore:
         return None
     
     @staticmethod
-    def modificaDettagliDipendente(dati: Dati, dipendente: Dipendente, **kwargs):
+    def modificaDettagliDipendente(dipendente: Dipendente, **kwargs):
         d = Gestore.cercaDipendente(dipendente)
         
         if d is None:
@@ -162,3 +162,11 @@ class Gestore:
                 print("Attributo non esistente")
                 return False
     
+    @staticmethod
+    def licenziaDipendente(dipendente: Dipendente):
+        d = Gestore.cercaDipendente(dipendente)
+        
+        if d is None:
+            return False
+        
+        Gestore.modificaDettagliDipendente(statoDipendente="licenziato")
