@@ -1,4 +1,4 @@
-from Model.Gestore import Gestore, Dati
+from Implementazione.Model.Dati import Gestore, Dati
 from Model.Magazzino.Magazzino import Magazzino
 from Controller.Inits.Inizializza import Finestra
 
