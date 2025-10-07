@@ -1,5 +1,5 @@
 from .Ordine.StatoOrdine import StatoOrdine
-from .Ordine.ordine import Ordine
+from .Ordine.Ordine import Ordine
 from .Magazzino.Magazzino import Magazzino
 from .Magazzino.Prodotto import Prodotto
 import pickle
@@ -16,7 +16,8 @@ class Dati:
         self.dipendenti = []
         self.prodotti = []
         self.manager = None
-        
+    
+    #salva su file con pickle    
     def salvaTutto(self, nomeFile):
         try:
             with open(nomeFile, "wb") as file:
@@ -25,10 +26,12 @@ class Dati:
             print(f"Errore nel salvataggio dei dati: {e}")
         pass
     
+    #carica dati in ram, mettendo tutto dentro i vari attributi della classe Dati 
     def caricaDati(self, nomeFile):
         try:
             with open(nomeFile, "rb") as file:
-                dati = pickle.load(file)
+                obj = pickle.load(file) 
+                self.__dict__.update(obj.__dict__)
         except (IOError, pickle.UnpicklingError) as e:
             print(f"Errore nel caricamento dei dati: {e}")
             

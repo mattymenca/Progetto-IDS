@@ -3,11 +3,11 @@ from .ProdottoOrdinato import ProdottoOrdinato
 
 class Ordine:
 
-    def __init__(self, id, prodottiOrdinati: list[ProdottoOrdinato], numeroCoperti, statoOrdine:StatoOrdine):
+    def __init__(self, id, prodottiOrdinati: list[ProdottoOrdinato], numeroCoperti):
         self.id = id
         self.prodottiOrdinati = prodottiOrdinati
         self.numeroCoperti = numeroCoperti
-        self.statoOrdine = statoOrdine
+        self.statoOrdine = None
 
     def getId(self):
         return self.id
