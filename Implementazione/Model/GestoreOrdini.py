@@ -1,18 +1,24 @@
 from Implementazione.Model.Dati import Dati
-from Implementazione.Model.Magazzino import Magazzino
+from Implementazione.Model.Magazzino.Magazzino import Magazzino
 from Implementazione.Model.Ordine import StatoOrdine
-from Implementazione.Model.Ordine.ordine import Ordine
+from Implementazione.Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
+from Implementazione.Model.Ordine.Ordine import Ordine
 
 class GestoreOrdini:
     @staticmethod
+    def creaNuovoOrdine(id: int, prodottiOrdinati: list[ProdottoOrdinato], numeroCoperti: int, dati: Dati, magazzino: Magazzino):
+        nuovoOrdine = Ordine(id, prodottiOrdinati, numeroCoperti)
+        GestoreOrdini.approvaOrdine(nuovoOrdine, magazzino)
+        dati.ordini.append(nuovoOrdine)
+    
     def approvaOrdine(ordine: Ordine, magazzino: Magazzino) -> bool:
         for prodottoOrdinato in ordine.getProdottiOrdinati():
             nomeProdotto = prodottoOrdinato.getNome()
             if prodottoOrdinato.getQuantita() > magazzino.prodottoDaInventario(nomeProdotto).getQuantita():
-                GestoreOrdini.impostaStatoOrdine("non approvato")
+                GestoreOrdini.impostaStatoOrdine(ordine, "non approvato")
                 print("Ordine non approvato\n")
                 return False
-        GestoreOrdini.impostaStatoOrdine("in corso")
+        GestoreOrdini.impostaStatoOrdine(ordine, "in corso")
         print("Ordine in corso\n")
         return True
     

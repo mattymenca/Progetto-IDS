@@ -50,7 +50,7 @@ class GestoreUtenti:
         return True
     
     def cercaDipendente(dati: Dati, dipendente: Dipendente):
-        for d in dati.dipendenti():
+        for d in dati.dipendenti:
             if d.nome == dipendente.nome and d.cognome == dipendente.cognome:
                 return d
         return None
@@ -62,9 +62,9 @@ class GestoreUtenti:
         if d is None:
             return False
         
-        for chiave, valore in kwargs:
-            if hasattr(d, chiave):
-                setattr(d, chiave, valore)
+        for attr, valore_attr in kwargs:
+            if hasattr(d, attr):
+                setattr(d, attr, valore_attr)
                 return True
             else:
                 print("Attributo non esistente")
