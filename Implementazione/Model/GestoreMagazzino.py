@@ -1,4 +1,4 @@
-from Implementazione.Model.Magazzino import Magazzino, Prodotto, StatoProdotto
+from Model.Magazzino import Magazzino, Prodotto, StatoProdotto
 
 class GestoreMagazzino:
     @staticmethod

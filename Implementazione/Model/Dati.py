@@ -1,5 +1,5 @@
 from .Ordine.StatoOrdine import StatoOrdine
-from .Ordine.Ordine import Ordine
+from .Ordine.ordine import Ordine
 from .Magazzino.Magazzino import Magazzino
 from .Magazzino.Prodotto import Prodotto
 import pickle
