@@ -1,10 +1,16 @@
-from Implementazione.Model.Dati import Gestore, Dati
+import sys
+from PyQt5.QtWidgets import QApplication
+from Model.Dati import Dati
+from Model.GestoreMagazzino import GestoreMagazzino
 from Model.Magazzino.Magazzino import Magazzino
-from Controller.Inits.Inizializza import Finestra
+from Controller.MainController import MainController
 
 if __name__ == "__main__":
+    app = QApplication(sys.argv)
     dati = Dati()
     dati.caricaDati("File")
-    finestra = Finestra()
-    magazzino = Magazzino(dati.prodotti)
-    Gestore.creaNuovoProdotto(magazzino, "mela", 5, 1, 0.5, "Tizio", False, 10)
+
+    controller = MainController()
+    controller.show()
+
+    sys.exit(app.exec_())
