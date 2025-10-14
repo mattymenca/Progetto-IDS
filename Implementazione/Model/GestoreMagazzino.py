@@ -1,10 +1,17 @@
-from Model.Magazzino import Magazzino, Prodotto, StatoProdotto
+from Implementazione.Model.Dati import Dati
+from Model.Magazzino.Magazzino import Magazzino
+from Model.Magazzino.Prodotto import Prodotto
+from Model.Magazzino.StatoProdotto import StatoProdotto
 
 class GestoreMagazzino:
     @staticmethod
+    def getMagazzino(dati: Dati):
+        return dati.prodotti 
+    
+    @staticmethod
     def creaNuovoProdotto(magazzino: Magazzino, nome, quantita, prezzo, costo, fornitore, avvisi, soglia):
         nuovoProdotto = Prodotto(nome, quantita, prezzo, costo, fornitore, avvisi, soglia)
-        magazzino.aggiungiProdotto(nuovoProdotto)
+        magazzino.aggiungiProdotto(nuovoProdotto, magazzino)
         
     @staticmethod
     def modificaDettagliProdotto(prodotto: Prodotto, **kwargs):
@@ -40,3 +47,4 @@ class GestoreMagazzino:
                 inventario.remove(prodotto)
                 return True
         return False
+

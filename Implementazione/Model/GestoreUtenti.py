@@ -21,13 +21,6 @@ class GestoreUtenti:
         return False
     
     @staticmethod
-    def eliminaDipendente(dipendente: Dipendente, dati: Dati):
-        if dipendente in dati.dipendenti:
-            dati.dipendenti.remove(dipendente)
-            return True
-        return False
-    
-    @staticmethod
     def cambiaManager(manager: Manager, dati: Dati):
         if not dati.manager is manager:
             dati.manager = manager
@@ -41,7 +34,7 @@ class GestoreUtenti:
     
     @staticmethod
     def modificaCredenziali(nome, password, nuovaPassword, dati: Dati):
-        if GestoreUtenti.validaCredenziali(nome, password) == False:
+        if nuovaPassword == password or nome != dati.manager.nome:
             print("Reinserire nome e password")
             return False
         
@@ -79,3 +72,11 @@ class GestoreUtenti:
         
         GestoreUtenti.modificaDettagliDipendente(statoDipendente="licenziato")
         return True
+      
+    @staticmethod
+    def eliminaDipendente(dipendente: Dipendente, dati: Dati):
+        if dipendente in dati.dipendenti:
+            dati.dipendenti.remove(dipendente)
+            return True
+        return False
+    
