@@ -14,7 +14,8 @@ class InizioController(QMainWindow, Ui_MainWindow):
         self.pushButton_4.clicked.connect(self.apriLogin)       
 
     def apriDipendenti(self):
-        self.primary_controller.mostraFinestra(DipendentiController)
+        is_maximized = self.isMaximized()
+        self.primary_controller.mostraFinestra(DipendentiController, start_maximized=is_maximized)
 
     def apriLogin(self):
         is_maximized = self.isMaximized()
