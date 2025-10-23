@@ -1,63 +1,64 @@
-from Implementazione.Model.Dati import Dati
-from Implementazione.Model.Utente import Contratto, Dipendente, Manager
+from Model.Dati import Dati
+from Model.Utente import Contratto, Dipendente, Manager
 
 class GestoreUtenti:
-    @staticmethod
-    def aggiungiContratto(contratto: Contratto, dati: Dati):
-        dati.contratti.append(contratto)
+    def __init__(self, dati: Dati):
+        self.dati = dati
+        
+    def aggiungiContratto(self,contratto: Contratto):
+        self.dati.contratti.append(contratto)
     
-    @staticmethod
-    def aggiungiDipendente(dipendente: Dipendente, dati: Dati):
-        if not dipendente in dati.dipendenti():
-            dati.dipendenti.append(dipendente)
+    
+    def aggiungiDipendente(self, dipendente: Dipendente):
+        if not dipendente in self.dati.dipendenti():
+            self.dati.dipendenti.append(dipendente)
             return True
         return False
     
-    @staticmethod
-    def eliminaContratto(contratto: Contratto, dati: Dati):
-        if contratto in dati.contratti:
-            dati.contratti.remove(contratto)
+     
+    def eliminaContratto(self, contratto: Contratto):
+        if contratto in self.dati.contratti:
+            self.dati.contratti.remove(contratto)
             return True
         return False
     
-    @staticmethod
-    def eliminaDipendente(dipendente: Dipendente, dati: Dati):
-        if dipendente in dati.dipendenti:
-            dati.dipendenti.remove(dipendente)
+    
+    def eliminaDipendente(self, dipendente: Dipendente):
+        if dipendente in self.dati.dipendenti:
+            self.dati.dipendenti.remove(dipendente)
             return True
         return False
     
-    @staticmethod
-    def cambiaManager(manager: Manager, dati: Dati):
-        if not dati.manager is manager:
-            dati.manager = manager
     
-    @staticmethod
-    def validaCredenziali(nome, password, dati: Dati):
-        if nome != dati.manager.nome or password != dati.manager.password:
-            print("Credenziali errate\n")
+    def cambiaManager(self, manager: Manager):
+        if not self.dati.manager is manager:
+            self.dati.manager = manager
+    
+    
+    def validaCredenziali(self, nome, password):
+        if nome != self.dati.manager.nome or password != self.dati.manager.password:
             return False
         return True
     
-    @staticmethod
-    def modificaCredenziali(nome, password, nuovaPassword, dati: Dati):
-        if GestoreUtenti.validaCredenziali(nome, password) == False:
+    
+    def modificaCredenziali(self, nome, nuovaPassword):
+        if GestoreUtenti.validaCredenziali(nome, nuovaPassword):
             print("Reinserire nome e password")
             return False
         
-        dati.manager.password = nuovaPassword
-        print("password modificata")
+        self.dati.manager.password = nuovaPassword
+        print("Password modificata")
         return True
     
-    def cercaDipendente(dati: Dati, dipendente: Dipendente):
-        for d in dati.dipendenti:
+    def cercaDipendente(self, dipendente: Dipendente):
+        for d in self.dati.dipendenti:
             if d.nome == dipendente.nome and d.cognome == dipendente.cognome:
                 return d
         return None
     
-    @staticmethod
-    def modificaDettagliDipendente(dipendente: Dipendente, **kwargs):
-        d = GestoreUtenti.cercaDipendente(dipendente)
+    
+    def modificaDettagliDipendente(self, dipendente: Dipendente, **kwargs):
+        d = self.cercaDipendente(dipendente)
         
         if d is None:
             return False
@@ -70,12 +71,12 @@ class GestoreUtenti:
                 print("Attributo non esistente")
                 return False
     
-    @staticmethod
-    def licenziaDipendente(dipendente: Dipendente):
-        d = GestoreUtenti.cercaDipendente(dipendente)
+    
+    def licenziaDipendente(self, dipendente: Dipendente):
+        d = self.cercaDipendente(dipendente)
         
         if d is None:
             return False
         
-        GestoreUtenti.modificaDettagliDipendente(statoDipendente="licenziato")
+        self.modificaDettagliDipendente(statoDipendente="licenziato")
         return True

@@ -1,3 +1,5 @@
+from Model.GestoreUtenti import GestoreUtenti
+
 # Controller/PrimaryController.py
 from PyQt5.QtWidgets import QWidget, QMainWindow # Import necessario per i tipi
 
@@ -7,12 +9,13 @@ class PrimaryController:
     e garantisce che ci sia una sola istanza di un dato tipo di Controller
     in un dato momento.
     """
-    def __init__(self):
+    def __init__(self, dati):
         # Mappa per memorizzare i riferimenti: {NomeClasse: IstanzaController}
         self.active_controllers = {}
         
         # Riferimento al Controller attualmente visibile
         self.current_controller = None
+        self.gestore_utenti = GestoreUtenti(dati)
 
     def mostraFinestra(self, ControllerClass, *args, **kwargs):
         """
@@ -21,29 +24,42 @@ class PrimaryController:
         Altrimenti, ne crea una nuova, passando 'self' (PrimaryController) come primo argomento.
         """
         
+        # 1. INTERCETTA L'ARGOMENTO SPECIALE 'start_maximized' DA KWARGS
+        # kwargs.pop('start_maximized', False) fa tre cose:
+        #   - Cerca la chiave 'start_maximized' nel dizionario kwargs.
+        #   - Se la trova, restituisce il suo valore (es. True) E LA RIMUOVE da kwargs.
+        #   - Se non la trova, restituisce il valore di default (False) senza dare errore.
+        start_maximized = kwargs.pop('start_maximized', False)
         controller_name = ControllerClass.__name__
         
-        # 1. Verifica se l'istanza esiste già
+        # 2. Verifica se l'istanza esiste già
         if controller_name in self.active_controllers:
             # Usa l'istanza esistente
             new_controller = self.active_controllers[controller_name]
         else:
-            # 2. Crea una nuova istanza
+            # 3. Crea una nuova istanza
             # Passa 'self' (PrimaryController) come primo argomento non-keyword
             # al costruttore del Controller specifico.
             new_controller = ControllerClass(self, *args, **kwargs)
             
-            # 3. Salva il riferimento nel registro
+            # 4. Salva il riferimento nel registro
             self.active_controllers[controller_name] = new_controller
 
-        # 4. Gestisce la visibilità
+        # 5. Gestisce la visibilità
         if self.current_controller is not None:
             # Nasconde la finestra attuale
             self.current_controller.hide()
             
-        # 5. Aggiorna e mostra la nuova finestra
+        # 6. Aggiorna e mostra la nuova finestra
         self.current_controller = new_controller
         self.current_controller.show()
+        
+        # 7. APPLICA LO STATO ALLA NUOVA FINESTRA PRIMA DI MOSTRARLA
+        # Usa la variabile che abbiamo catturato al punto 1.
+        if start_maximized:
+            self.current_controller.showMaximized()
+        else:
+            self.current_controller.show()
 
     def chiudiErimuovi(self, controller_instance):
         """
