@@ -1,4 +1,4 @@
-from Model.GestoreOrdini import GestoreOrdini
+from Model.Gestore.GestoreOrdini import GestoreOrdini
 from Model.Conto import Conto, MetodoPagamento
 from Model.Ordine.ordine import Ordine
 

@@ -1,8 +1,8 @@
-from Implementazione.Model.Dati import Dati
-from Implementazione.Model.Magazzino.Magazzino import Magazzino
-from Implementazione.Model.Ordine import StatoOrdine
-from Implementazione.Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
-from Implementazione.Model.Ordine.Ordine import Ordine
+from Model.Dati import Dati
+from Model.Magazzino.Magazzino import Magazzino
+from Model.Ordine import StatoOrdine
+from Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
+from Model.Ordine.ordine import Ordine
 
 class GestoreOrdini:
     @staticmethod

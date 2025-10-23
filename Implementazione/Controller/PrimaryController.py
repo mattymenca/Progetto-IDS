@@ -1,4 +1,4 @@
-from Model.GestoreUtenti import GestoreUtenti
+from Model.Gestore.GestoreUtenti import GestoreUtenti
 
 # Controller/PrimaryController.py
 from PyQt5.QtWidgets import QWidget, QMainWindow # Import necessario per i tipi
