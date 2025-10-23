@@ -1,6 +1,6 @@
-from Implementazione.Model import GestoreOrdini
-from Implementazione.Model.Conto import Conto, MetodoPagamento
-from Implementazione.Model.Ordine.Ordine import Ordine
+from Model.Gestore.GestoreOrdini import GestoreOrdini
+from Model.Conto import Conto, MetodoPagamento
+from Model.Ordine.ordine import Ordine
 
 
 class GestoreConti:
