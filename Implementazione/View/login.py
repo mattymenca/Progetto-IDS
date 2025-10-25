@@ -7,7 +7,7 @@ class Ui_LoginWindow(object):
     def setupUi(self, LoginWindow):
         LoginWindow.setObjectName("LoginWindow")
         LoginWindow.resize(500, 400)
-        LoginWindow.setWindowTitle("Login Gestionale")
+        LoginWindow.setWindowTitle("Gestionale")
 
         # Applica lo stesso stile moderno e scuro
         LoginWindow.setStyleSheet("""

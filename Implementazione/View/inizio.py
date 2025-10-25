@@ -68,5 +68,5 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Gestionale Ristorante"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Gestionale"))
         # The button text is now set directly in the QPushButton constructor
