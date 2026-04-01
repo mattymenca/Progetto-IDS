@@ -10,7 +10,7 @@ class GestoreUtenti:
     
     
     def aggiungiDipendente(self, dipendente: Dipendente):
-        if not dipendente in self.dati.dipendenti():
+        if not dipendente in self.dati.dipendenti:
             self.dati.dipendenti.append(dipendente)
             return True
         return False
@@ -40,43 +40,37 @@ class GestoreUtenti:
             return False
         return True
     
-    
-    def modificaCredenziali(self, nome, nuovaPassword):
-        if GestoreUtenti.validaCredenziali(nome, nuovaPassword):
-            print("Reinserire nome e password")
+    #funzione che controlla prima se le vecchie credenziali sono corrette, in tal caso le modifica, altrimenti restituisce falso
+    def modificaCredenziali(self, nome, vecchiaPassword, nuovaPassword):
+        if self.validaCredenziali(nome, vecchiaPassword):
+            self.dati.manager.password = nuovaPassword
+            print("Password modificata")
+            return True
+        else:
+            print("Nome utente o vecchia password errati")
             return False
-        
-        self.dati.manager.password = nuovaPassword
-        print("Password modificata")
-        return True
-    
+         
     def cercaDipendente(self, dipendente: Dipendente):
         for d in self.dati.dipendenti:
             if d.nome == dipendente.nome and d.cognome == dipendente.cognome:
                 return d
         return None
     
-    
-    def modificaDettagliDipendente(self, dipendente: Dipendente, **kwargs):
-        d = self.cercaDipendente(dipendente)
-        
-        if d is None:
-            return False
-        
-        for attr, valore_attr in kwargs:
+    #modifica gli attributi passati come argomento se esistenti, altrimenti restituisce falso
+    def modificaDettagliDipendente(self, d: Dipendente, **kwargs):
+      
+        for attr, valore_attr in kwargs.items():
             if hasattr(d, attr):
                 setattr(d, attr, valore_attr)
-                return True
             else:
                 print("Attributo non esistente")
                 return False
-    
+        return True
     
     def licenziaDipendente(self, dipendente: Dipendente):
-        d = self.cercaDipendente(dipendente)
-        
-        if d is None:
-            return False
-        
-        self.modificaDettagliDipendente(statoDipendente="licenziato")
+        self.modificaDettagliDipendente(dipendente, statoDipendente="licenziato")
+        return True
+    
+    def logout():
+        Dati.salvaTutto("dati.txt")
         return True

@@ -17,7 +17,7 @@ class PrimaryController:
         self.current_controller = None
         self.gestore_utenti = GestoreUtenti(dati)
 
-    def mostraFinestra(self, ControllerClass, *args, **kwargs):
+    def mostra_finestra(self, ControllerClass, *args, **kwargs):
         """
         Nasconde la finestra attuale e mostra la finestra del controller specificato.
         Se un'istanza di quel ControllerClass esiste già, la riutilizza.
@@ -61,7 +61,7 @@ class PrimaryController:
         else:
             self.current_controller.show()
 
-    def chiudiErimuovi(self, controller_instance):
+    def chiudi_e_rimuovi(self, controller_instance):
         """
         Chiude e rimuove il riferimento a un controller, permettendo al GC di agire.
         Usato quando si chiude definitivamente una schermata.
@@ -78,3 +78,23 @@ class PrimaryController:
                 
             # Distrugge l'oggetto QWidget in modo pulito
             controller_instance.deleteLater()
+            
+    def chiusura_sicura(self):
+        """
+        Metodo centralizzato per spegnere l'applicazione salvando i dati.
+        """
+        print("Inizio procedura di spegnimento...")
+        # 1. Chiamiamo il logout/salvataggio nel Model
+        successo = self.gestore_utenti.logout()
+        
+        if successo:
+            print("Salvataggio completato con successo.")
+        else:
+            print("ATTENZIONE: Errore durante il salvataggio dei dati!")
+            # Qui potresti aggiungere un QMessageBox di emergenza se volessi
+            
+        # 2. Chiudiamo tutte le finestre attive nel registro
+        for name, controller in list(self.active_controllers.items()):
+            controller.close()
+            
+        print("Applicazione chiusa correttamente.")
