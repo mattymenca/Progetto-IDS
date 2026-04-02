@@ -1,42 +1,48 @@
-from Model.Magazzino import Magazzino, Prodotto, StatoProdotto
+from Model.Magazzino.Magazzino import Magazzino, Prodotto, StatoProdotto
+from Model.Dati import Dati
 
 class GestoreMagazzino:
-    @staticmethod
-    def creaNuovoProdotto(magazzino: Magazzino, nome, quantita, prezzo, costo, fornitore, avvisi, soglia):
-        nuovoProdotto = Prodotto(nome, quantita, prezzo, costo, fornitore, avvisi, soglia)
-        magazzino.aggiungiProdotto(nuovoProdotto)
+    
+    def __init__(self, magazzino: Magazzino, dati: Dati ):
+        self.magazzino = magazzino
+        self.dati = dati
         
-    @staticmethod
-    def modificaDettagliProdotto(prodotto: Prodotto, **kwargs):
-        p = GestoreMagazzino.cercaProdotto(prodotto)
+    def creaNuovoProdotto(self, nome, quantita, prezzo, costo, fornitore, avvisi, soglia):
+        nuovoProdotto = Prodotto(nome, quantita, prezzo, costo, fornitore, avvisi, soglia)
+        self.magazzino.aggiungiProdotto(nuovoProdotto)
+        self.dati.setDirty()
+        
+    def modificaDettagliProdotto(self, prodotto: Prodotto, **kwargs):
+        p = self.cercaProdotto(prodotto)
         
         if p is None:
             return False
         
-        for attr, valore_attr in kwargs:
+        for attr, valore_attr in kwargs.items():
             if hasattr(p, attr):
                 setattr(p, attr, valore_attr)
-                return True
             else:
                 print("Attributo non esistente")
                 return False
-    
-    @staticmethod
-    def cercaProdotto(magazzino: Magazzino, prodotto: Prodotto):
-        for p in magazzino.inventario:
-            if p.nome == prodotto.nome:
+
+        self.dati.setDirty()    
+        return True
+        
+    def cercaProdotto(self, prodotto: Prodotto):
+        for p in self.magazzino.getInventario():
+            if p.nome == prodotto.getNomeProdotto():
                 return p
         return None
     
-    @staticmethod
-    def modificaStatoProdotto(prodotto: Prodotto, statoProdotto: StatoProdotto):
+    def modificaStatoProdotto(self, prodotto: Prodotto, statoProdotto: StatoProdotto):
         prodotto.setStatoProdotto(statoProdotto)
+        self.dati.setDirty()
         
-    @staticmethod
-    def eliminaProdotto(nomeProdotto: str, magazzino: Magazzino):
-        inventario = magazzino.getInventario()
-        for prodotto in magazzino.inventario:
-            if nomeProdotto == prodotto.getNome():
+    def eliminaProdotto(self, nomeProdotto: str):
+        inventario = self.magazzino.getInventario()
+        for prodotto in inventario:
+            if nomeProdotto == prodotto.getNomeProdotto():
                 inventario.remove(prodotto)
+                self.dati.setDirty()
                 return True
         return False

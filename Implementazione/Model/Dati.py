@@ -16,15 +16,22 @@ class Dati:
         self.dipendenti = []
         self.prodotti = []
         self.manager = None
+        #flag per indicare se i dati sono stati già salvati o no
+        self.is_dirty = False
     
     #salva su file con pickle    
     def salvaTutto(self, nomeFile):
+        #se i dati sono stati già salvati, non esegue il salvataggio
+        if not self.is_dirty:
+            return
+        
         try:
             with open(nomeFile, "wb") as file:
                 pickle.dump(self, file)
+                #i dati in memoria sono stati salvati su file quindi il flag viene messo a false
+                self.is_dirty = False
         except (IOError, pickle.PicklingError) as e:
             print(f"Errore nel salvataggio dei dati: {e}")
-        pass
     
     #carica dati in ram, mettendo tutto dentro i vari attributi della classe Dati 
     def caricaDati(self, nomeFile):
@@ -34,7 +41,10 @@ class Dati:
                 self.__dict__.update(obj.__dict__)
         except (IOError, pickle.UnpicklingError) as e:
             print(f"Errore nel caricamento dei dati: {e}")
-            
+    
+    def setDirty(self):
+        self.is_dirty = True
+                
 
         
     

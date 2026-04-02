@@ -2,6 +2,7 @@ from Model.Dati import Dati
 from Model.Utente import Contratto, Dipendente, Manager
 
 class GestoreUtenti:
+    
     def __init__(self, dati: Dati):
         self.dati = dati
         
@@ -12,6 +13,7 @@ class GestoreUtenti:
     def aggiungiDipendente(self, dipendente: Dipendente):
         if not dipendente in self.dati.dipendenti:
             self.dati.dipendenti.append(dipendente)
+            self.dati.setDirty()
             return True
         return False
     
@@ -19,6 +21,7 @@ class GestoreUtenti:
     def eliminaContratto(self, contratto: Contratto):
         if contratto in self.dati.contratti:
             self.dati.contratti.remove(contratto)
+            self.dati.setDirty()
             return True
         return False
     
@@ -26,6 +29,7 @@ class GestoreUtenti:
     def eliminaDipendente(self, dipendente: Dipendente):
         if dipendente in self.dati.dipendenti:
             self.dati.dipendenti.remove(dipendente)
+            self.dati.setDirty()
             return True
         return False
     
@@ -33,7 +37,9 @@ class GestoreUtenti:
     def cambiaManager(self, manager: Manager):
         if not self.dati.manager is manager:
             self.dati.manager = manager
-    
+            self.dati.setDirty()
+            return True
+        return False
     
     def validaCredenziali(self, nome, password):
         if nome != self.dati.manager.nome or password != self.dati.manager.password:
@@ -45,6 +51,7 @@ class GestoreUtenti:
         if self.validaCredenziali(nome, vecchiaPassword):
             self.dati.manager.password = nuovaPassword
             print("Password modificata")
+            self.dati.setDirty()
             return True
         else:
             print("Nome utente o vecchia password errati")
@@ -65,12 +72,15 @@ class GestoreUtenti:
             else:
                 print("Attributo non esistente")
                 return False
+        
+        self.dati.setDirty()
         return True
     
     def licenziaDipendente(self, dipendente: Dipendente):
         self.modificaDettagliDipendente(dipendente, statoDipendente="licenziato")
+        self.dati.setDirty()
         return True
     
-    def logout():
-        Dati.salvaTutto("dati.txt")
+    def logout(self):
+        self.dati.salvaTutto("dati.pickle")
         return True

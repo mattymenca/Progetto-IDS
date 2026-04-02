@@ -5,45 +5,47 @@ from Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
 from Model.Ordine.ordine import Ordine
 
 class GestoreOrdini:
-    @staticmethod
-    def creaNuovoOrdine(id: int, prodottiOrdinati: list[ProdottoOrdinato], numeroCoperti: int, dati: Dati, magazzino: Magazzino):
-        nuovoOrdine = Ordine(id, prodottiOrdinati, numeroCoperti)
-        GestoreOrdini.approvaOrdine(nuovoOrdine, magazzino)
-        dati.ordini.append(nuovoOrdine)
     
-    def approvaOrdine(ordine: Ordine, magazzino: Magazzino) -> bool:
+    def __init__(self, dati: Dati):
+        self.dati = dati
+        
+    def creaNuovoOrdine(self, id: int, prodottiOrdinati: list[ProdottoOrdinato], numeroCoperti: int, magazzino: Magazzino):
+        nuovoOrdine = Ordine(id, prodottiOrdinati, numeroCoperti)
+        if self.approvaOrdine(nuovoOrdine, magazzino):
+            self.dati.ordini.append(nuovoOrdine)
+            self.dati.setDirty()
+            return True
+        return False
+    
+    def approvaOrdine(self, ordine: Ordine, magazzino: Magazzino) -> bool:
         for prodottoOrdinato in ordine.getProdottiOrdinati():
             nomeProdotto = prodottoOrdinato.getNome()
-            if prodottoOrdinato.getQuantita() > magazzino.prodottoDaInventario(nomeProdotto).getQuantita():
-                GestoreOrdini.impostaStatoOrdine(ordine, "non approvato")
+            if magazzino.prodottoDaInventario(nomeProdotto) is None or prodottoOrdinato.getQuantita() > magazzino.prodottoDaInventario(nomeProdotto).getQuantita():
+                self.impostaStatoOrdine(ordine, "non approvato")
                 print("Ordine non approvato\n")
                 return False
-        GestoreOrdini.impostaStatoOrdine(ordine, "in corso")
+            
+        self.impostaStatoOrdine(ordine, "in corso")
         print("Ordine in corso\n")
         return True
     
-    # @staticmethod
-    # def valida_ordine(ordine: Ordine, magazzino: Magazzino) -> bool:
-    #     return all(
-    #         p.getQuantita() <= magazzino.prodottoDaInventario(p.getNome()).getQuantita()
-    #         for p in ordine.getProdottiOrdinati()
-    #     )
-    def impostaStatoOrdine(ordine: Ordine, stato: StatoOrdine):
+    def impostaStatoOrdine(self, ordine: Ordine, stato: StatoOrdine):
         ordine.setStato(stato)
+        self.dati.setDirty()
+        
+    def concludiOrdine(self, ordine: Ordine):
+        self.impostaStatoOrdine(ordine, "concluso")
     
-    @staticmethod
-    def concludiOrdine(ordine: Ordine, dati: Dati):
-        GestoreOrdini.impostaStatoOrdine("concluso")
-        dati.ordini.append(ordine)
-    
-    @staticmethod
-    def restituisciOrdine(idOrdine, ordini: list[Ordine]) -> Ordine:
-        for ordine in ordini:
+    def restituisciOrdine(self, idOrdine) -> Ordine:
+        for ordine in self.dati.ordini:
             if idOrdine == ordine.getId():
                 return ordine
+        return None
     
-    @staticmethod
-    def eliminaOrdine(idOrdine: int, ordini: list[Ordine]):
-        for ordine in ordini:
+    def eliminaOrdine(self, idOrdine: int):
+        for ordine in self.dati.ordini:
             if idOrdine == ordine.getId():
-                ordini.remove(ordine)    
+                self.dati.ordini.remove(ordine)
+                self.dati.setDirty()  
+                return True 
+        return False
