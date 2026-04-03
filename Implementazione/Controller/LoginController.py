@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow
 from View.login import Ui_LoginWindow
+from Controller.PrimaryController import PrimaryController
 class LoginController(QMainWindow, Ui_LoginWindow):
-    def __init__(self, primary_controller):
+    def __init__(self, primary_controller: PrimaryController):
         super().__init__()
         self.setupUi(self)
         self.primary_controller = primary_controller 
@@ -19,3 +20,8 @@ class LoginController(QMainWindow, Ui_LoginWindow):
             print("Login riuscito! Cambio finestra...")
         else:
             self.label_error.setText("Nome o password non corretti.")
+            
+    def closeEvent(self, event):
+        # Gestisce la chiusura tramite la 'X' della finestra.
+        self.primary_controller.chiusura_sicura()
+        event.accept()    

@@ -1,6 +1,6 @@
 from Model.Dati import Dati
 from Model.Magazzino.Magazzino import Magazzino
-from Model.Ordine import StatoOrdine
+from Model.Ordine.StatoOrdine import StatoOrdine
 from Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
 from Model.Ordine.ordine import Ordine
 
@@ -17,15 +17,16 @@ class GestoreOrdini:
             return True
         return False
     
-    def approvaOrdine(self, ordine: Ordine, magazzino: Magazzino) -> bool:
+    def approvaOrdine(self, ordine: Ordine, magazzino: Magazzino):
         for prodottoOrdinato in ordine.getProdottiOrdinati():
             nomeProdotto = prodottoOrdinato.getNome()
-            if magazzino.prodottoDaInventario(nomeProdotto) is None or prodottoOrdinato.getQuantita() > magazzino.prodottoDaInventario(nomeProdotto).getQuantita():
-                self.impostaStatoOrdine(ordine, "non approvato")
+            prodottoDaInventario = magazzino.prodottoDaInventario(nomeProdotto)
+            if prodottoDaInventario is None or prodottoOrdinato.getQuantita() > prodottoDaInventario.getQuantita():
+                self.impostaStatoOrdine(ordine, StatoOrdine.NON_APPROVATO)
                 print("Ordine non approvato\n")
                 return False
             
-        self.impostaStatoOrdine(ordine, "in corso")
+        self.impostaStatoOrdine(ordine, StatoOrdine.IN_CORSO)
         print("Ordine in corso\n")
         return True
     
@@ -34,7 +35,7 @@ class GestoreOrdini:
         self.dati.setDirty()
         
     def concludiOrdine(self, ordine: Ordine):
-        self.impostaStatoOrdine(ordine, "concluso")
+        self.impostaStatoOrdine(ordine, StatoOrdine.CONCLUSO)
     
     def restituisciOrdine(self, idOrdine) -> Ordine:
         for ordine in self.dati.ordini:

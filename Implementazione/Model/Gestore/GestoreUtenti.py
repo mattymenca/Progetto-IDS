@@ -1,5 +1,8 @@
 from Model.Dati import Dati
-from Model.Utente import Contratto, Dipendente, Manager
+from Model.Utente.Contratto import Contratto
+from Model.Utente.Dipendente import Dipendente
+from Model.Utente.Manager import Manager
+from Model.Utente.StatoDipendente import StatoDipendente
 
 class GestoreUtenti:
     
@@ -9,22 +12,19 @@ class GestoreUtenti:
     def aggiungiContratto(self,contratto: Contratto):
         self.dati.contratti.append(contratto)
     
-    
     def aggiungiDipendente(self, dipendente: Dipendente):
         if not dipendente in self.dati.dipendenti:
             self.dati.dipendenti.append(dipendente)
             self.dati.setDirty()
             return True
         return False
-    
      
     def eliminaContratto(self, contratto: Contratto):
         if contratto in self.dati.contratti:
             self.dati.contratti.remove(contratto)
             self.dati.setDirty()
             return True
-        return False
-    
+        return False 
     
     def eliminaDipendente(self, dipendente: Dipendente):
         if dipendente in self.dati.dipendenti:
@@ -32,7 +32,6 @@ class GestoreUtenti:
             self.dati.setDirty()
             return True
         return False
-    
     
     def cambiaManager(self, manager: Manager):
         if not self.dati.manager is manager:
@@ -42,6 +41,8 @@ class GestoreUtenti:
         return False
     
     def validaCredenziali(self, nome, password):
+        if self.dati.manager is None:
+            return False
         if nome != self.dati.manager.nome or password != self.dati.manager.password:
             return False
         return True
@@ -53,9 +54,9 @@ class GestoreUtenti:
             print("Password modificata")
             self.dati.setDirty()
             return True
-        else:
-            print("Nome utente o vecchia password errati")
-            return False
+        
+        print("Nome utente o vecchia password errati")
+        return False
          
     def cercaDipendente(self, dipendente: Dipendente):
         for d in self.dati.dipendenti:
@@ -66,21 +67,15 @@ class GestoreUtenti:
     #modifica gli attributi passati come argomento se esistenti, altrimenti restituisce falso
     def modificaDettagliDipendente(self, d: Dipendente, **kwargs):
       
-        for attr, valore_attr in kwargs.items():
-            if hasattr(d, attr):
-                setattr(d, attr, valore_attr)
-            else:
-                print("Attributo non esistente")
+        for attr, valore in kwargs.items():
+            if not hasattr(d, attr):
                 return False
-        
+            setattr(d, attr, valore)
         self.dati.setDirty()
         return True
     
     def licenziaDipendente(self, dipendente: Dipendente):
-        self.modificaDettagliDipendente(dipendente, statoDipendente="licenziato")
-        self.dati.setDirty()
-        return True
+        return self.modificaDettagliDipendente(dipendente, stato=StatoDipendente.LICENZIATO)
     
-    def logout(self):
-        self.dati.salvaTutto("dati.pickle")
-        return True
+    def logout(self, path: str):
+        return self.dati.salvaTutto(path)

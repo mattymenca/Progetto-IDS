@@ -1,7 +1,7 @@
 from Model.Gestore.GestoreUtenti import GestoreUtenti
 
 # Controller/PrimaryController.py
-from PyQt5.QtWidgets import QWidget, QMainWindow # Import necessario per i tipi
+from PyQt5.QtWidgets import QWidget, QMainWindow, QMessageBox # Import necessario per i tipi
 
 class PrimaryController:
     """
@@ -9,13 +9,13 @@ class PrimaryController:
     e garantisce che ci sia una sola istanza di un dato tipo di Controller
     in un dato momento.
     """
-    def __init__(self, dati):
+    def __init__(self, gestore_utenti: GestoreUtenti):
         # Mappa per memorizzare i riferimenti: {NomeClasse: IstanzaController}
         self.active_controllers = {}
         
         # Riferimento al Controller attualmente visibile
         self.current_controller = None
-        self.gestore_utenti = GestoreUtenti(dati)
+        self.gestore_utenti = gestore_utenti
 
     def mostra_finestra(self, ControllerClass, *args, **kwargs):
         """
@@ -80,21 +80,18 @@ class PrimaryController:
             controller_instance.deleteLater()
             
     def chiusura_sicura(self):
-        """
-        Metodo centralizzato per spegnere l'applicazione salvando i dati.
-        """
-        print("Inizio procedura di spegnimento...")
-        # 1. Chiamiamo il logout/salvataggio nel Model
-        successo = self.gestore_utenti.logout()
         
-        if successo:
-            print("Salvataggio completato con successo.")
-        else:
-            print("ATTENZIONE: Errore durante il salvataggio dei dati!")
-            # Qui potresti aggiungere un QMessageBox di emergenza se volessi
-            
+        # Metodo centralizzato per spegnere l'applicazione salvando i dati.
+        # 1. Chiamiamo il logout/salvataggio nel Model
+        successo = self.gestore_utenti.logout(path = "dati.pickle")
+        
+        if not successo:
+            QMessageBox.critical(
+                None, 
+                "Errore di Salvataggio", 
+                "Non è stato possibile salvare i dati su 'dati.pickle'.\n"
+            )            
         # 2. Chiudiamo tutte le finestre attive nel registro
-        for name, controller in list(self.active_controllers.items()):
+        for controller in list(self.active_controllers.values()):
             controller.close()
             
-        print("Applicazione chiusa correttamente.")

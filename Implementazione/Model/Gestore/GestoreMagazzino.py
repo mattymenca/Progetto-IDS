@@ -18,16 +18,13 @@ class GestoreMagazzino:
         if p is None:
             return False
         
-        for attr, valore_attr in kwargs.items():
-            if hasattr(p, attr):
-                setattr(p, attr, valore_attr)
-            else:
-                print("Attributo non esistente")
+        for attr, valore in kwargs.items():
+            if not hasattr(p, attr):
                 return False
-
-        self.dati.setDirty()    
+            setattr(p, attr, valore)
+        self.dati.setDirty()
         return True
-        
+          
     def cercaProdotto(self, prodotto: Prodotto):
         for p in self.magazzino.getInventario():
             if p.nome == prodotto.getNomeProdotto():
