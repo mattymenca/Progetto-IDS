@@ -1,8 +1,8 @@
 from Model.Gestore.GestoreUtenti import GestoreUtenti
 
 # Controller/PrimaryController.py
-from PyQt5.QtWidgets import QWidget, QMainWindow, QMessageBox # Import necessario per i tipi
-
+from PyQt5.QtWidgets import QMessageBox # Import necessario per i tipi
+from PyQt5.QtCore import Qt
 class PrimaryController:
     """
     Gestisce i riferimenti persistenti di tutti i Controller (schermate)
@@ -45,22 +45,23 @@ class PrimaryController:
             # 4. Salva il riferimento nel registro
             self.active_controllers[controller_name] = new_controller
 
-        # 5. Gestisce la visibilità
+        # 5. Gestisce la visibilità della finestra precedente
         if self.current_controller is not None:
-            # Nasconde la finestra attuale
+            # Salviamo se la finestra era ingrandita prima di nasconderla
+            was_maximized = self.current_controller.isMaximized()
             self.current_controller.hide()
-            
-        # 6. Aggiorna e mostra la nuova finestra
+        else:
+            was_maximized = False
+
+        # 6. Aggiorna e prepara la nuova finestra
         self.current_controller = new_controller
-        self.current_controller.show()
         
-        # 7. APPLICA LO STATO ALLA NUOVA FINESTRA PRIMA DI MOSTRARLA
-        # Usa la variabile che abbiamo catturato al punto 1.
-        if start_maximized:
-            self.current_controller.showMaximized()
+        # 7. APPLICA LO STATO ALLA NUOVA FINESTRA
+        if was_maximized or start_maximized:
+            self.current_controller.setWindowState(self.current_controller.windowState() | Qt.WindowMaximized)
+            self.current_controller.show()
         else:
             self.current_controller.show()
-
     def chiudi_e_rimuovi(self, controller_instance):
         """
         Chiude e rimuove il riferimento a un controller, permettendo al GC di agire.
