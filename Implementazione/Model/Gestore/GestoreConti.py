@@ -12,7 +12,7 @@ class GestoreConti:
     def creaConto(self, ordine: Ordine, metodoPagamento: MetodoPagamento):
         if ordine is not None:
             nuovoConto = Conto(ordine.getId(), metodoPagamento)
-            nuovoConto.calcolaTotale(ordine)
+            self.calcolaTotale(ordine)
         
             self.gestoreOrdini.concludiOrdine(ordine)
             self.dati.conti.append(nuovoConto)
@@ -21,4 +21,11 @@ class GestoreConti:
             return True
         return False
     
+    def calcolaTotale(self, ordine): 
+        totale = 2 * ordine.getNumeroCoperti()
+        for prodotto in ordine.getProdottiOrdinati():
+                totale += prodotto.getPrezzo() * prodotto.getQuantita()
+        
+        self.totale = totale
+        return totale
  

@@ -1,7 +1,7 @@
 from Model.Ordine.ordine import Ordine
 class Persona:
 
-    def __init__(self, nome, cognome, eta, ordini:list[Ordine]):
+    def __init__(self, nome, cognome, eta, ordini: list[Ordine]):
         self.nome = nome
         self.cognome = cognome
         self.eta = eta

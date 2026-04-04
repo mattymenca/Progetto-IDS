@@ -3,14 +3,14 @@ from .ProdottoOrdinato import ProdottoOrdinato
 
 class Ordine:
 
-    def __init__(self, id, prodottiOrdinati: list[ProdottoOrdinato], numeroCoperti):
-        self.id = id
+    def __init__(self, idOrdine, prodottiOrdinati: list[ProdottoOrdinato], numeroCoperti):
+        self.idOrdine = idOrdine
         self.prodottiOrdinati = prodottiOrdinati
         self.numeroCoperti = numeroCoperti
         self.statoOrdine = None
 
     def getId(self):
-        return self.id
+        return self.idOrdine
     
     def getStato(self):
         return self.statoOrdine

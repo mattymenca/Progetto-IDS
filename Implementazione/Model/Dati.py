@@ -28,9 +28,9 @@ class Dati:
         
         try:
             with open(nomeFile, "wb") as file:
-                pickle.dump(self, file)
-                #i dati in memoria sono stati salvati su file quindi il flag viene messo a false
+                #il flag viene messo a false prima di salvarlo su file
                 self.is_dirty = False
+                pickle.dump(self, file)
                 return True
         except (IOError, pickle.PicklingError) as e:
             print(f"Errore nel salvataggio dei dati: {e}")
