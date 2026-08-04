@@ -1,100 +1,58 @@
 from Model.Gestore.GestoreUtenti import GestoreUtenti
-
-# Controller/PrimaryController.py
-from PyQt5.QtWidgets import QWidget, QMainWindow # Import necessario per i tipi
+from PyQt5.QtWidgets import QMainWindow
 
 class PrimaryController:
     """
-    Gestisce i riferimenti persistenti di tutti i Controller (schermate)
-    e garantisce che ci sia una sola istanza di un dato tipo di Controller
-    in un dato momento.
+    Router centrale dell'applicazione: gestisce lo stato delle finestre,
+    la navigazione e il passaggio dei dati.
     """
     def __init__(self, dati):
-        # Mappa per memorizzare i riferimenti: {NomeClasse: IstanzaController}
+        self.dati = dati
         self.active_controllers = {}
-        
-        # Riferimento al Controller attualmente visibile
         self.current_controller = None
         self.gestore_utenti = GestoreUtenti(dati)
 
     def mostra_finestra(self, ControllerClass, *args, **kwargs):
-        """
-        Nasconde la finestra attuale e mostra la finestra del controller specificato.
-        Se un'istanza di quel ControllerClass esiste già, la riutilizza.
-        Altrimenti, ne crea una nuova, passando 'self' (PrimaryController) come primo argomento.
-        """
-        
-        # 1. INTERCETTA L'ARGOMENTO SPECIALE 'start_maximized' DA KWARGS
-        # kwargs.pop('start_maximized', False) fa tre cose:
-        #   - Cerca la chiave 'start_maximized' nel dizionario kwargs.
-        #   - Se la trova, restituisce il suo valore (es. True) E LA RIMUOVE da kwargs.
-        #   - Se non la trova, restituisce il valore di default (False) senza dare errore.
         start_maximized = kwargs.pop('start_maximized', False)
         controller_name = ControllerClass.__name__
         
-        # 2. Verifica se l'istanza esiste già
+        # 1. Se la finestra esiste già nel registro, la riutilizziamo
         if controller_name in self.active_controllers:
-            # Usa l'istanza esistente
             new_controller = self.active_controllers[controller_name]
+            # Se la schermata ha dati dinamici (es. tabelle), la aggiorniamo
+            if hasattr(new_controller, 'aggiorna_vista'):
+                new_controller.aggiorna_vista()
         else:
-            # 3. Crea una nuova istanza
-            # Passa 'self' (PrimaryController) come primo argomento non-keyword
-            # al costruttore del Controller specifico.
+            # 2. Altrimenti crea una nuova istanza passando 'self'
             new_controller = ControllerClass(self, *args, **kwargs)
-            
-            # 4. Salva il riferimento nel registro
             self.active_controllers[controller_name] = new_controller
 
-        # 5. Gestisce la visibilità
+        # 3. Nascondi la finestra attuale
         if self.current_controller is not None:
-            # Nasconde la finestra attuale
             self.current_controller.hide()
             
-        # 6. Aggiorna e mostra la nuova finestra
         self.current_controller = new_controller
-        self.current_controller.show()
         
-        # 7. APPLICA LO STATO ALLA NUOVA FINESTRA PRIMA DI MOSTRARLA
-        # Usa la variabile che abbiamo catturato al punto 1.
+        # 4. Mostra la nuova finestra mantenendo lo stato (massimizzato o no)
         if start_maximized:
             self.current_controller.showMaximized()
         else:
             self.current_controller.show()
 
+    # Alias di compatibilità
+    mostraFinestra = mostra_finestra
+
     def chiudi_e_rimuovi(self, controller_instance):
-        """
-        Chiude e rimuove il riferimento a un controller, permettendo al GC di agire.
-        Usato quando si chiude definitivamente una schermata.
-        """
         controller_name = controller_instance.__class__.__name__
-        
         if controller_name in self.active_controllers:
-            # Rimuove il riferimento e chiude la finestra
             self.active_controllers.pop(controller_name)
-            
-            # Se è il controller corrente, lo resetta
             if self.current_controller == controller_instance:
                 self.current_controller = None
-                
-            # Distrugge l'oggetto QWidget in modo pulito
             controller_instance.deleteLater()
             
     def chiusura_sicura(self):
-        """
-        Metodo centralizzato per spegnere l'applicazione salvando i dati.
-        """
-        print("Inizio procedura di spegnimento...")
-        # 1. Chiamiamo il logout/salvataggio nel Model
-        successo = self.gestore_utenti.logout()
-        
-        if successo:
-            print("Salvataggio completato con successo.")
-        else:
-            print("ATTENZIONE: Errore durante il salvataggio dei dati!")
-            # Qui potresti aggiungere un QMessageBox di emergenza se volessi
-            
-        # 2. Chiudiamo tutte le finestre attive nel registro
-        for name, controller in list(self.active_controllers.items()):
-            controller.close()
-            
-        print("Applicazione chiusa correttamente.")
+        print("Salvataggio dati in corso...")
+        self.dati.salvaTutto("dati.pkl")
+
+    def salva_dati(self):
+        self.dati.salvaTutto("dati.pkl")
