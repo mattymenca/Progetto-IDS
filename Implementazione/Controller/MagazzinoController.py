@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QMessageBox, QInputDialog
+from PyQt5.QtGui import QColor
 from View.magazzino import Ui_MagazzinoWindow
 from Model.Magazzino.Prodotto import Prodotto
 from Model.Magazzino.StatoProdotto import StatoProdotto
@@ -14,23 +15,37 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
         self.btn_elimina.clicked.connect(self.elimina_prodotto)
         self.btn_indietro.clicked.connect(self.torna_indietro)
 
-        # Rileva modifiche manuali sulle celle della tabella
         self.tableWidget.cellChanged.connect(self.salva_modifica_cella)
-
         self.aggiorna_vista()
 
     def aggiorna_vista(self):
-        # Disabilita temporaneamente il segnale per evitare di salvare mentre carichiamo la tabella
         self.tableWidget.blockSignals(True)
         self.tableWidget.setRowCount(0)
         prodotti = self.primary_controller.dati.prodotti
+        
         for row, p in enumerate(prodotti):
             self.tableWidget.insertRow(row)
-            self.tableWidget.setItem(row, 0, QTableWidgetItem(str(p.getNomeProdotto())))
-            self.tableWidget.setItem(row, 1, QTableWidgetItem(str(p.getQuantita())))
-            self.tableWidget.setItem(row, 2, QTableWidgetItem(f"{p.getPrezzo():.2f}"))
-            self.tableWidget.setItem(row, 3, QTableWidgetItem(f"{p.getCosto():.2f}"))
-            self.tableWidget.setItem(row, 4, QTableWidgetItem(str(p.getFornitore())))
+            
+            item_nome = QTableWidgetItem(str(p.getNomeProdotto()))
+            item_qta = QTableWidgetItem(str(p.getQuantita()))
+            item_soglia = QTableWidgetItem(str(p.getSoglia()))
+            item_prezzo = QTableWidgetItem(f"{p.getPrezzo():.2f}")
+            item_costo = QTableWidgetItem(f"{p.getCosto():.2f}")
+            item_fornitore = QTableWidgetItem(str(p.getFornitore()))
+
+            # Evidenzia in ROSSO se sotto o pari alla soglia
+            if p.getQuantita() <= p.getSoglia():
+                color_rosso = QColor(231, 76, 60, 180)
+                item_qta.setBackground(color_rosso)
+                item_nome.setBackground(color_rosso)
+
+            self.tableWidget.setItem(row, 0, item_nome)
+            self.tableWidget.setItem(row, 1, item_qta)
+            self.tableWidget.setItem(row, 2, item_soglia)
+            self.tableWidget.setItem(row, 3, item_prezzo)
+            self.tableWidget.setItem(row, 4, item_costo)
+            self.tableWidget.setItem(row, 5, item_fornitore)
+            
         self.tableWidget.blockSignals(False)
 
     def rifornisci_prodotto(self):
@@ -38,66 +53,54 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
         if row >= 0:
             prodotto = self.primary_controller.dati.prodotti[row]
             qta_aggiuntiva, ok = QInputDialog.getInt(
-                self, 
-                "Rifornisci Prodotto", 
+                self, "Rifornisci Prodotto", 
                 f"Quanti pezzi vuoi aggiungere a '{prodotto.getNomeProdotto()}'?",
                 value=10, min=1, max=1000
             )
             if ok:
-                nuova_qta = prodotto.getQuantita() + qta_aggiuntiva
-                prodotto.modificaQuantita(nuova_qta)
+                prodotto.modificaQuantita(prodotto.getQuantita() + qta_aggiuntiva)
                 prodotto.setStatoProdotto(StatoProdotto.RIFORNITO)
-                
-                # Salvataggio immediato su disco
                 self.primary_controller.salva_dati()
                 self.aggiorna_vista()
-                QMessageBox.information(self, "Rifornito", f"Nuova quantità di {prodotto.getNomeProdotto()}: {nuova_qta}")
         else:
-            QMessageBox.warning(self, "Attenzione", "Seleziona prima un prodotto da rifornire.")
+            QMessageBox.warning(self, "Attenzione", "Seleziona prima un prodotto.")
 
     def salva_modifica_cella(self, row, column):
-        """Salva nel modello quando l'utente modifica direttamente una cella della tabella"""
         try:
             prodotto = self.primary_controller.dati.prodotti[row]
-            nuovo_valore = self.tableWidget.item(row, column).text()
+            valore = self.tableWidget.item(row, column).text()
 
-            if column == 0: # Nome
-                prodotto.setNome(nuovo_valore)
-            elif column == 1: # Quantità
-                prodotto.modificaQuantita(int(nuovo_valore))
-            elif column == 2: # Prezzo
-                prodotto.setPrezzo(float(nuovo_valore))
-            elif column == 3: # Costo
-                prodotto.setCosto(float(nuovo_valore))
-            elif column == 4: # Fornitore
-                prodotto.modificaFornitore(nuovo_valore)
+            if column == 0: prodotto.setNome(valore)
+            elif column == 1: prodotto.modificaQuantita(int(valore))
+            elif column == 2: prodotto.setSoglia(int(valore))
+            elif column == 3: prodotto.setPrezzo(float(valore))
+            elif column == 4: prodotto.setCosto(float(valore))
+            elif column == 5: prodotto.modificaFornitore(valore)
 
-            # Salva subito su disco
             self.primary_controller.salva_dati()
+            self.aggiorna_vista()
         except Exception:
-            QMessageBox.warning(self, "Errore", "Valore inserito nella cella non valido!")
+            QMessageBox.warning(self, "Errore", "Valore inserito non valido!")
             self.aggiorna_vista()
 
     def aggiungi_prodotto(self):
         try:
             nome = self.input_nome.text()
             qta = int(self.input_qta.text())
+            soglia = int(self.input_soglia.text() if self.input_soglia.text() else 5)
             prezzo = float(self.input_prezzo.text())
             costo = float(self.input_costo.text())
             fornitore = self.input_fornitore.text()
 
-            if not nome:
-                raise ValueError("Nome vuoto")
+            if not nome: raise ValueError()
 
-            nuovo = Prodotto(nome, qta, prezzo, costo, fornitore, True, 5)
+            nuovo = Prodotto(nome, qta, prezzo, costo, fornitore, True, soglia)
             self.primary_controller.dati.prodotti.append(nuovo)
-            
             self.primary_controller.salva_dati()
             self.aggiorna_vista()
             self.pulisci_input()
-            QMessageBox.information(self, "Successo", "Prodotto aggiunto al magazzino!")
         except ValueError:
-            QMessageBox.warning(self, "Errore", "Dati non validi nei campi di inserimento.")
+            QMessageBox.warning(self, "Errore", "Dati inseriti non validi.")
 
     def elimina_prodotto(self):
         row = self.tableWidget.currentRow()
@@ -105,16 +108,11 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
             self.primary_controller.dati.prodotti.pop(row)
             self.primary_controller.salva_dati()
             self.aggiorna_vista()
-            QMessageBox.information(self, "Successo", "Prodotto rimosso!")
-        else:
-            QMessageBox.warning(self, "Attenzione", "Seleziona prima una riga da eliminare.")
 
     def pulisci_input(self):
-        self.input_nome.clear()
-        self.input_qta.clear()
-        self.input_prezzo.clear()
-        self.input_costo.clear()
-        self.input_fornitore.clear()
+        self.input_nome.clear(); self.input_qta.clear()
+        self.input_soglia.clear(); self.input_prezzo.clear()
+        self.input_costo.clear(); self.input_fornitore.clear()
 
     def torna_indietro(self):
         from Controller.Dipendenti import DipendentiController

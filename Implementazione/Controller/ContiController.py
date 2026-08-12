@@ -18,14 +18,12 @@ class ContiController(QMainWindow, Ui_ContiWindow):
         self.combo_ordini.clear()
         self.combo_pagamento.clear()
 
-        # Popola Metodi Pagamento
         for m in MetodoPagamento:
             self.combo_pagamento.addItem(m.value.upper(), m)
 
-        # Popola Ordini Aperti
         ordini = self.primary_controller.dati.ordini
         for ord in ordini:
-            self.combo_ordini.addItem(f"Tavolo #{ord.getId()} ({ord.getNumeroCoperti()} coperti)", ord)
+            self.combo_ordini.addItem(f"Ordine #{ord.getId()} ({ord.getNumeroCoperti()} coperti)", ord)
 
     def calcola_totale(self):
         ordine = self.combo_ordini.currentData()
@@ -43,31 +41,20 @@ class ContiController(QMainWindow, Ui_ContiWindow):
         ordine = self.combo_ordini.currentData()
         metodo = self.combo_pagamento.currentData()
 
-        if not ordine:
-            QMessageBox.warning(self, "Attenzione", "Nessun ordine selezionato.")
-            return
+        if not ordine: return
 
-        # Calcolo del totale finale
         totale = 2 * ordine.getNumeroCoperti()
         for p in ordine.getProdottiOrdinati():
             totale += p.getPrezzo() * p.getQuantita()
 
-        # Rimuove l'ordine dalla lista degli ordini aperti
+        # Sposta l'ordine dagli ordini attivi allo STORICO ORDINI della classe Dati
         if ordine in self.primary_controller.dati.ordini:
             self.primary_controller.dati.ordini.remove(ordine)
-            
-        self.primary_controller.salva_dati()  #salvo subito
+            self.primary_controller.dati.storico_ordini.append(ordine)
 
-        # Messaggio di conferma scontrino
-        QMessageBox.information(
-            self, 
-            "Pagamento Effettuato", 
-            f"Conto di {totale:.2f}€ incassato con successo!\nScontrino emesso."
-        )
+        self.primary_controller.salva_dati()
 
-        self.lbl_totale.setText("Totale da Pagare: 0.00 €")
-
-        # REINDIRIZZAMENTO AUTOMATICO ALLA SCHERMATA DIPENDENTI
+        QMessageBox.information(self, "Pagamento Effettuato", f"Conto di {totale:.2f}€ incassato con successo!")
         self.torna_indietro()
 
     def torna_indietro(self):

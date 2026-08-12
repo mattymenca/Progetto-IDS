@@ -3,7 +3,7 @@ from PyQt5 import QtCore, QtWidgets
 class Ui_MagazzinoWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(950, 650)
+        MainWindow.resize(1000, 650)
         MainWindow.setStyleSheet("""
             QMainWindow { background-color: #2c3e50; }
             QLabel { color: white; font-size: 14px; }
@@ -13,21 +13,19 @@ class Ui_MagazzinoWindow(object):
             QPushButton { background-color: #3498db; color: white; border-radius: 6px; padding: 8px 15px; font-weight: bold; }
             QPushButton:hover { background-color: #2980b9; }
             QPushButton#btn_rifornisci { background-color: #2ecc71; }
-            QPushButton#btn_rifornisci:hover { background-color: #27ae60; }
             QPushButton#btn_elimina { background-color: #e74c3c; }
-            QPushButton#btn_elimina:hover { background-color: #c0392b; }
         """)
         
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.layout = QtWidgets.QVBoxLayout(self.centralwidget)
         
-        self.label = QtWidgets.QLabel("Gestione Magazzino / Inventario (Doppio click sulla tabella per modificare i valori)", self.centralwidget)
-        self.label.setStyleSheet("font-size: 16px; font-weight: bold; margin-bottom: 10px;")
+        self.label = QtWidgets.QLabel("Gestione Magazzino (Modifica diretta celle | Evidenziati in ROSSO se sotto soglia)", self.centralwidget)
+        self.label.setStyleSheet("font-size: 15px; font-weight: bold;")
         self.layout.addWidget(self.label)
         
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setColumnCount(5)
-        self.tableWidget.setHorizontalHeaderLabels(["Nome", "Quantità", "Prezzo (€)", "Costo (€)", "Fornitore"])
+        self.tableWidget.setColumnCount(6)
+        self.tableWidget.setHorizontalHeaderLabels(["Nome", "Quantità", "Soglia Minima", "Prezzo (€)", "Costo (€)", "Fornitore"])
         self.tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.layout.addWidget(self.tableWidget)
         
@@ -44,6 +42,11 @@ class Ui_MagazzinoWindow(object):
         self.formLayout.addWidget(QtWidgets.QLabel("Q.tà:"), 0, 2)
         self.formLayout.addWidget(self.input_qta, 0, 3)
 
+        self.input_soglia = QtWidgets.QLineEdit()
+        self.input_soglia.setPlaceholderText("Soglia Minima")
+        self.formLayout.addWidget(QtWidgets.QLabel("Soglia:"), 0, 4)
+        self.formLayout.addWidget(self.input_soglia, 0, 5)
+
         self.input_prezzo = QtWidgets.QLineEdit()
         self.input_prezzo.setPlaceholderText("Prezzo (€)")
         self.formLayout.addWidget(QtWidgets.QLabel("Prezzo:"), 1, 0)
@@ -56,8 +59,8 @@ class Ui_MagazzinoWindow(object):
 
         self.input_fornitore = QtWidgets.QLineEdit()
         self.input_fornitore.setPlaceholderText("Fornitore")
-        self.formLayout.addWidget(QtWidgets.QLabel("Fornitore:"), 2, 0)
-        self.formLayout.addWidget(self.input_fornitore, 2, 1)
+        self.formLayout.addWidget(QtWidgets.QLabel("Fornitore:"), 1, 4)
+        self.formLayout.addWidget(self.input_fornitore, 1, 5)
 
         self.layout.addLayout(self.formLayout)
         

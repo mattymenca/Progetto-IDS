@@ -8,7 +8,7 @@ class Ui_ContiWindow(object):
             QMainWindow { background-color: #2c3e50; }
             QLabel { color: white; font-size: 15px; }
             QComboBox { background-color: #34495e; color: white; padding: 8px; border-radius: 4px; }
-            QPushButton { background-color: #2ecc71; color: white; border-radius: 6px; padding: 12px; font-size: 16px; font-weight: bold; }
+            QPushButton { background-color: #2ecc71; color: white; border-radius: 6px; padding: 12px; font-size: 15px; font-weight: bold; }
             QPushButton:hover { background-color: #27ae60; }
         """)
         
@@ -19,7 +19,7 @@ class Ui_ContiWindow(object):
         self.title.setStyleSheet("font-size: 22px; font-weight: bold; margin-bottom: 20px;")
         self.layout.addWidget(self.title)
 
-        self.layout.addWidget(QtWidgets.QLabel("Seleziona Tavolo / Ordine Aperto:"))
+        self.layout.addWidget(QtWidgets.QLabel("Seleziona Ordine Aperto (ID Ordine):"))
         self.combo_ordini = QtWidgets.QComboBox()
         self.layout.addWidget(self.combo_ordini)
 
@@ -31,7 +31,8 @@ class Ui_ContiWindow(object):
         self.lbl_totale.setStyleSheet("font-size: 24px; font-weight: bold; color: #f1c40f; margin: 20px 0;")
         self.layout.addWidget(self.lbl_totale)
 
-        self.btn_calcola = QtWidgets.QPushButton("Calcola Totale Conto")
+        # ETICHETTA CAMBIATA COME RICHIESTO
+        self.btn_calcola = QtWidgets.QPushButton("Completa Conto e Calcola Totale")
         self.btn_calcola.setStyleSheet("background-color: #3498db;")
         self.btn_chiudi = QtWidgets.QPushButton("Chiudi ed Emetti Scontrino")
         self.btn_indietro = QtWidgets.QPushButton("Torna Indietro")
