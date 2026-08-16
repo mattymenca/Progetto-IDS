@@ -31,32 +31,30 @@ class ContiController(QMainWindow, Ui_ContiWindow):
             QMessageBox.warning(self, "Attenzione", "Nessun ordine aperto selezionato.")
             return
 
-        totale = 2 * ordine.getNumeroCoperti()
-        for p in ordine.getProdottiOrdinati():
-            totale += p.getPrezzo() * p.getQuantita()
-
+        # Delega il calcolo al GestoreConti
+        totale = self.primary_controller.gestore_conti.calcola_totale(ordine)
         self.lbl_totale.setText(f"Totale da Pagare: {totale:.2f} €")
 
     def paga_e_chiudi(self):
         ordine = self.combo_ordini.currentData()
         metodo = self.combo_pagamento.currentData()
 
-        if not ordine: return
+        if not ordine:
+            return
 
-        totale = 2 * ordine.getNumeroCoperti()
-        for p in ordine.getProdottiOrdinati():
-            totale += p.getPrezzo() * p.getQuantita()
-
-        # Sposta l'ordine dagli ordini attivi allo STORICO ORDINI della classe Dati
-        if ordine in self.primary_controller.dati.ordini:
-            self.primary_controller.dati.ordini.remove(ordine)
-            self.primary_controller.dati.storico_ordini.append(ordine)
+        # Delega l'incasso e lo spostamento allo storico al GestoreConti
+        totale = self.primary_controller.gestore_conti.chiudi_e_incassa_conto(
+            ordine, self.primary_controller.dati
+        )
 
         self.primary_controller.salva_dati()
-
         QMessageBox.information(self, "Pagamento Effettuato", f"Conto di {totale:.2f}€ incassato con successo!")
         self.torna_indietro()
 
     def torna_indietro(self):
-        from Controller.Dipendenti import DipendentiController
+        from Controller.DipendentiController import DipendentiController
         self.primary_controller.mostra_finestra(DipendentiController, start_maximized=self.isMaximized())
+
+    def closeEvent(self, event):
+        self.primary_controller.chiusura_sicura()
+        event.accept()

@@ -33,7 +33,6 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
             item_costo = QTableWidgetItem(f"{p.getCosto():.2f}")
             item_fornitore = QTableWidgetItem(str(p.getFornitore()))
 
-            # Evidenzia in ROSSO se sotto o pari alla soglia
             if p.getQuantita() <= p.getSoglia():
                 color_rosso = QColor(231, 76, 60, 180)
                 item_qta.setBackground(color_rosso)
@@ -115,5 +114,9 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
         self.input_costo.clear(); self.input_fornitore.clear()
 
     def torna_indietro(self):
-        from Controller.Dipendenti import DipendentiController
+        from Controller.DipendentiController import DipendentiController
         self.primary_controller.mostra_finestra(DipendentiController, start_maximized=self.isMaximized())
+
+    def closeEvent(self, event):
+        self.primary_controller.chiusura_sicura()
+        event.accept()

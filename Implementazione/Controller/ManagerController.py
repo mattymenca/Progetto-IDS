@@ -6,7 +6,7 @@ from Model.Utente.Contratto import Contratto
 from Model.Utente.TipoContratto import TipoContratto
 
 class DettagliPersonaDialog(QDialog):
-    """Finestra Pop-up generica per mostrare lo storico ordini (e contratti) di qualsiasi Persona (Manager o Dipendente)"""
+    """Finestra Pop-up generica per mostrare lo storico ordini e contratti"""
     def __init__(self, persona, parent=None):
         super().__init__(parent)
         self.setWindowTitle(f"Scheda e Storico: {persona.getNome()} {persona.getCognome()}")
@@ -26,7 +26,7 @@ class DettagliPersonaDialog(QDialog):
         ordini = persona.getOrdini() if hasattr(persona, 'getOrdini') else []
         if ordini:
             for o in ordini:
-                tot = 2 * o.getNumeroCoperti() + sum(p.getPrezzo() * p.getQuantita() for p in o.getProdottiOrdinati())
+                tot = parent.primary_controller.gestore_conti.calcola_totale(o) if parent and hasattr(parent, 'primary_controller') else 0.0
                 list_o.addItem(f"Ordine #{o.getId()} | Coperti: {o.getNumeroCoperti()} | Totale: {tot:.2f}€")
         else:
             list_o.addItem("Nessun ordine effettuato da questo operatore.")
@@ -34,7 +34,7 @@ class DettagliPersonaDialog(QDialog):
         layout_o.addWidget(list_o)
         tabs.addTab(tab_ordini, "Storico Ordini Presi")
 
-        # TAB 2: CONTRATTI (Se è un Dipendente)
+        # TAB 2: CONTRATTI
         if hasattr(persona, 'getStoricoContratti') and persona.getStoricoContratti():
             tab_contratti = QWidget()
             layout_c = QVBoxLayout(tab_contratti)
@@ -181,3 +181,7 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
     def logout(self):
         from Controller.Inizio import InizioController
         self.primary_controller.mostra_finestra(InizioController, start_maximized=self.isMaximized())
+
+    def closeEvent(self, event):
+        self.primary_controller.chiusura_sicura()
+        event.accept()

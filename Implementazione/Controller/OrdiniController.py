@@ -19,7 +19,6 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         self.btn_annulla_ordine.clicked.connect(self.annulla_ordine_selezionato)
         self.btn_indietro.clicked.connect(self.torna_indietro)
 
-        # Ricerca dinamica prodotti e ordini mentre si digita
         self.input_filtro_prod.textChanged.connect(self.filtra_prodotti)
         self.input_cerca_id.textChanged.connect(self.filtra_ordini_attivi)
 
@@ -29,7 +28,6 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         return self.primary_controller.dati.genera_nuovo_id_ordine()
 
     def aggiorna_vista(self):
-        # Popola Operatori
         self.combo_operatore.clear()
         for d in self.primary_controller.dati.dipendenti:
             self.combo_operatore.addItem(f"{d.getNome()} {d.getCognome()}", d)
@@ -41,7 +39,6 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         self.filtra_ordini_attivi("")
         self.prepara_nuovo_ordine()
 
-    # --- RICERCA PRODOTTI ---
     def popola_prodotti(self, filtro=""):
         self.combo_prodotti.clear()
         for p in self.primary_controller.dati.prodotti:
@@ -51,7 +48,6 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
     def filtra_prodotti(self, testo):
         self.popola_prodotti(testo)
 
-    # --- RICERCA DINAMICA ORDINI ESISTENTI ---
     def popola_ordini_attivi(self, filtro=""):
         self.combo_ordini_trovati.clear()
         ordini = self.primary_controller.dati.ordini
@@ -118,7 +114,6 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
             self.lbl_id_generato.setText(f"ID Ordine (In Modifica): #{self.id_corrente}")
             self.spin_coperti.setValue(ordine_selezionato.getNumeroCoperti())
             
-            # Ripristina temporaneamente le scorte per consentire la nuova modifica
             for po in ordine_selezionato.getProdottiOrdinati():
                 for p in self.primary_controller.dati.prodotti:
                     if p.getNomeProdotto() == po.getNome():
@@ -139,7 +134,6 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
     def annulla_ordine_selezionato(self):
         ordine_selezionato = self.combo_ordini_trovati.currentData()
         if ordine_selezionato:
-            # Ripristina scorte
             for po in ordine_selezionato.getProdottiOrdinati():
                 for p in self.primary_controller.dati.prodotti:
                     if p.getNomeProdotto() == po.getNome():
@@ -153,5 +147,9 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
             QMessageBox.warning(self, "Attenzione", "Nessun ordine selezionato dalla lista.")
 
     def torna_indietro(self):
-        from Controller.Dipendenti import DipendentiController
+        from Controller.DipendentiController import DipendentiController
         self.primary_controller.mostra_finestra(DipendentiController, start_maximized=self.isMaximized())
+
+    def closeEvent(self, event):
+        self.primary_controller.chiusura_sicura()
+        event.accept()
