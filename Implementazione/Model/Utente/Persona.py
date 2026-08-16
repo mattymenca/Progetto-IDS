@@ -1,24 +1,24 @@
 from Model.Ordine.ordine import Ordine
-class Persona:
 
-    def __init__(self, nome, cognome, eta, ordini: list[Ordine]):
+class Persona:
+    def __init__(self, nome, cognome, eta, ordini: list[Ordine] = None):
         self.nome = nome
         self.cognome = cognome
         self.eta = eta
-        self.ordini = ordini
+        self.ordini = ordini if ordini is not None else []
 
     def getNome(self):
         return self.nome
-    
+
     def getCognome(self):
         return self.cognome
-    
+
     def getEta(self):
         return self.eta
-    
+
     def getOrdini(self):
         return self.ordini
-    
+
     def setNome(self, nome: str):
         self.nome = nome
 
@@ -29,4 +29,4 @@ class Persona:
         self.eta = eta
 
     def aggiungiOrdine(self, ordine: Ordine):
-        self.getOrdini.append(ordine)
+        self.ordini.append(ordine)
