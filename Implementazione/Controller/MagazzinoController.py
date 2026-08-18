@@ -58,7 +58,7 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
                 value=10, min=1, max=1000
             )
             if ok:
-                prodotto.modificaQuantita(prodotto.getQuantita() + qta_aggiuntiva)
+                prodotto.setQuantita(prodotto.getQuantita() + qta_aggiuntiva)
                 prodotto.setStatoProdotto(StatoProdotto.RIFORNITO)
                 self.primary_controller.salva_dati()
                 self.aggiorna_vista()
@@ -70,12 +70,12 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
             prodotto = self.primary_controller.dati.prodotti[row]
             valore = self.tableWidget.item(row, column).text()
 
-            if column == 0: prodotto.setNome(valore)
-            elif column == 1: prodotto.modificaQuantita(int(valore))
+            if column == 0: prodotto.setNomeProdotto(valore)
+            elif column == 1: prodotto.setQuantita(int(valore))
             elif column == 2: prodotto.setSoglia(int(valore))
             elif column == 3: prodotto.setPrezzo(float(valore))
             elif column == 4: prodotto.setCosto(float(valore))
-            elif column == 5: prodotto.modificaFornitore(valore)
+            elif column == 5: prodotto.setFornitore(valore)
 
             self.primary_controller.salva_dati()
             self.aggiorna_vista()

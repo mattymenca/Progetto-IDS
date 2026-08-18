@@ -98,7 +98,7 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         lista_po = []
         for po, prod_orig in self.carrello:
             lista_po.append(po)
-            prod_orig.modificaQuantita(prod_orig.getQuantita() - po.getQuantita())
+            prod_orig.setQuantita(prod_orig.getQuantita() - po.getQuantita())
 
         nuovo_ordine = Ordine(self.id_corrente, lista_po, coperti)
         self.primary_controller.dati.ordini.append(nuovo_ordine)
@@ -122,7 +122,7 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
             for po in ordine_selezionato.getProdottiOrdinati():
                 for p in self.primary_controller.dati.prodotti:
                     if p.getNomeProdotto() == po.getNome():
-                        p.modificaQuantita(p.getQuantita() + po.getQuantita())
+                        p.setQuantita(p.getQuantita() + po.getQuantita())
 
             self.carrello.clear()
             self.list_riepilogo.clear()
@@ -143,7 +143,7 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
             for po in ordine_selezionato.getProdottiOrdinati():
                 for p in self.primary_controller.dati.prodotti:
                     if p.getNomeProdotto() == po.getNome():
-                        p.modificaQuantita(p.getQuantita() + po.getQuantita())
+                        p.setQuantita(p.getQuantita() + po.getQuantita())
 
             self.primary_controller.dati.ordini.remove(ordine_selezionato)
             self.primary_controller.salva_dati()

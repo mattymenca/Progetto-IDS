@@ -8,7 +8,7 @@ class Conto:
         self.totale = 0
         
     def getIdOrdine(self):
-        return self.ordine.getId() # Corretto: prima cercava un self.idOrdine inesistente
+        return self.ordine.getId()
     
     def getTotale(self):
         return self.totale

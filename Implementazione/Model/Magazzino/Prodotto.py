@@ -2,7 +2,7 @@ from .StatoProdotto import StatoProdotto
 
 class Prodotto:
     
-    def __init__(self, nome, quantita, prezzo, costo, fornitore, avvisi, soglia):
+    def __init__(self, nome: str, quantita: int, prezzo: float, costo: float, fornitore, avvisi, soglia: int):
         self.nome = nome
         self.quantita = quantita
         self.prezzo = prezzo
@@ -10,7 +10,7 @@ class Prodotto:
         self.fornitore = fornitore
         self.avvisi = avvisi
         self.soglia = soglia
-        self.statoProdotto = "rifornito"
+        self.statoProdotto = StatoProdotto.RIFORNITO
         
     def getNomeProdotto(self):
         return self.nome
@@ -36,7 +36,7 @@ class Prodotto:
     def getStatoProdotto(self):
         return self.statoProdotto
     
-    def setNome(self, nome: str):
+    def setNomeProdotto(self, nome: str):
         self.nome = nome
 
     def setPrezzo(self, prezzo: float):
@@ -45,16 +45,16 @@ class Prodotto:
     def setCosto(self, costo: float):
         self.costo = costo
 
-    def modificaQuantita(self, quantita: int):
+    def setQuantita(self, quantita: int):
         self.quantita = quantita
 
-    def modificaFornitore(self, fornitore: str):
+    def setFornitore(self, fornitore: str):
         self.fornitore = fornitore
 
     def setSoglia(self, soglia: int):
         self.soglia = soglia
 
-    def modificaAvvisi(self, avvisi: bool):
+    def setAvvisi(self, avvisi: bool):
         self.avvisi = avvisi
 
     def setStatoProdotto(self, statoProdotto: StatoProdotto):

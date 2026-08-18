@@ -12,7 +12,7 @@ class Ordine:
     def getId(self):
         return self.id
     
-    def getStato(self):
+    def getStatoOrdine(self):
         return self.statoOrdine
     
     def getNumeroCoperti(self):
@@ -21,14 +21,14 @@ class Ordine:
     def getProdottiOrdinati(self):
         return self.prodottiOrdinati
     
-    def aggiungiProdotto(self, prodottoOrdinato: ProdottoOrdinato):
-        self.prodottiOrdinati.append(prodottoOrdinato)
+    def aggiungiProdottoOrdinato(self, prodottoDaAggiungere: ProdottoOrdinato):
+        self.prodottiOrdinati.append(prodottoDaAggiungere)
 
-    def rimuoviProdotto(self, prodottoOrdinato: list[ProdottoOrdinato]):
-        self.prodottiOrdinati.remove(prodottoOrdinato)
+    def rimuoviProdottoOrdinato(self, prodottoDaRimuovere: list[ProdottoOrdinato]):
+        self.prodottiOrdinati.remove(prodottoDaRimuovere)
 
     def setNumeroCoperti(self, numeroCoperti):
         self.numeroCoperti = numeroCoperti
 
-    def setStato(self, statoOrdine: StatoOrdine):
+    def setStatoOrdine(self, statoOrdine: StatoOrdine):
         self.statoOrdine = statoOrdine

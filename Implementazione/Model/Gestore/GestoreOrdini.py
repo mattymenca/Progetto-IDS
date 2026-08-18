@@ -29,7 +29,7 @@ class GestoreOrdini:
     #         for p in ordine.getProdottiOrdinati()
     #     )
     def impostaStatoOrdine(ordine: Ordine, stato: StatoOrdine):
-        ordine.setStato(stato)
+        ordine.setStatoOrdine(stato)
     
     @staticmethod
     def concludiOrdine(ordine: Ordine, dati: Dati):
