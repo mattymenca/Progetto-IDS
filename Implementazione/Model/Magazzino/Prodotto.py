@@ -2,7 +2,7 @@ from .StatoProdotto import StatoProdotto
 
 class Prodotto:
     
-    def __init__(self, nome: str, quantita: int, prezzo: float, costo: float, fornitore, avvisi, soglia: int):
+    def __init__(self, nome: str, quantita: int, prezzo: float, costo: float, fornitore: str, avvisi: bool, soglia: int):
         self.nome = nome
         self.quantita = quantita
         self.prezzo = prezzo

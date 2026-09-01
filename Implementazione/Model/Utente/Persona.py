@@ -29,5 +29,4 @@ class Persona:
         self.eta = eta
 
     def aggiungiOrdine(self, ordine: Ordine):
-        # CORRETTO: self.ordini anziché self.getOrdini
         self.ordini.append(ordine)

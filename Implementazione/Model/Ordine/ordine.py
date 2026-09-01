@@ -24,7 +24,7 @@ class Ordine:
     def aggiungiProdottoOrdinato(self, prodottoDaAggiungere: ProdottoOrdinato):
         self.prodottiOrdinati.append(prodottoDaAggiungere)
 
-    def rimuoviProdottoOrdinato(self, prodottoDaRimuovere: list[ProdottoOrdinato]):
+    def rimuoviProdottoOrdinato(self, prodottoDaRimuovere: ProdottoOrdinato):
         self.prodottiOrdinati.remove(prodottoDaRimuovere)
 
     def setNumeroCoperti(self, numeroCoperti):
