@@ -7,37 +7,30 @@ class GestoreMagazzino:
         magazzino.aggiungiProdotto(nuovoProdotto)
         
     @staticmethod
-    def modificaDettagliProdotto(magazzino: Magazzino, nomeProdotto: str, **kwargs):
-        p = GestoreMagazzino.cercaProdotto(magazzino, nomeProdotto)
-        
-        if p is None:
+    def modificaDettagliProdotto(prodotto: Prodotto, **kwargs):
+        if prodotto is None:
             return False
         
-        for attr, valore_attr in kwargs:
-            if hasattr(p, attr):
-                setattr(p, attr, valore_attr)
-                return True
+        for attr, valore_attr in kwargs.items():
+            if hasattr(prodotto, attr):
+                setattr(prodotto, attr, valore_attr)
+                
             else:
                 print("Attributo non esistente")
                 return False
+        return True
     
     @staticmethod
-    def cercaProdotto(magazzino: Magazzino, nomeProdotto: str):
-        for p in magazzino.inventario:
-            if p.getNome() == nomeProdotto:
-                return p
-        return None
+    def modificaStatoProdotto(prodotto: Prodotto, statoProdotto: StatoProdotto):
+        if prodotto is not None:
+            prodotto.setStatoProdotto(statoProdotto)
+            return True
+        return False
     
     @staticmethod
-    def modificaStatoProdotto(magazzino: Magazzino, nomeProdotto: str, statoProdotto: StatoProdotto):
-        prodotto = GestoreMagazzino.cercaProdotto(magazzino, nomeProdotto)
-        prodotto.setStatoProdotto(statoProdotto)
-        
-    @staticmethod
-    def eliminaProdotto(magazzino: Magazzino, nomeProdotto: str):
-        inventario = magazzino.getInventario()
-        for prodotto in inventario:
-            if nomeProdotto == prodotto.getNome():
-                inventario.remove(prodotto)
-                return True
+    def eliminaProdotto(magazzino: Magazzino, prodotto: Prodotto):
+        if prodotto in magazzino.getInventario():
+            magazzino.getInventario().remove(prodotto)
+            return True
+
         return False

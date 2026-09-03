@@ -50,7 +50,7 @@ class ContiController(QMainWindow, Ui_ContiWindow):
         # Sposta l'ordine dagli ordini attivi allo STORICO ORDINI della classe Dati
         if ordine in self.primary_controller.dati.ordini:
             self.primary_controller.dati.ordini.remove(ordine)
-            self.primary_controller.dati.storico_ordini.append(ordine)
+            self.primary_controller.dati.storicoOrdini.append(ordine)
 
         self.primary_controller.salva_dati()
 

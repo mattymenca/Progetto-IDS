@@ -26,7 +26,7 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         self.aggiorna_vista()
 
     def genera_id_incrementale(self):
-        return self.primary_controller.dati.genera_nuovo_id_ordine()
+        return self.primary_controller.dati.generaNuovoIdOrdine()
 
     def aggiorna_vista(self):
         # Popola Operatori

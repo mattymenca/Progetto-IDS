@@ -3,17 +3,17 @@ import pickle
 class Dati:
     def __init__(self):
         self.ordini = []          # Ordini attivi in corso
-        self.storico_ordini = []  # ARCHIVIO: Ordini completati e saldati
+        self.storicoOrdini = []  # ARCHIVIO: Ordini completati e saldati
         self.contratti = []
         self.dipendenti = []
         self.prodotti = []
         self.manager = None
-        self.prossimo_id_ordine = 1 # CONTATORE SEQUENZIALE (1, 2, 3...)
+        self.prossimoIdOrdine = 1 # CONTATORE SEQUENZIALE (1, 2, 3...)
 
-    def genera_nuovo_id_ordine(self):
+    def generaNuovoIdOrdine(self):
         """Genera un ID sequenziale incrementale che non si ripete mai"""
-        id_attuale = self.prossimo_id_ordine
-        self.prossimo_id_ordine += 1
+        id_attuale = self.prossimoIdOrdine
+        self.prossimoIdOrdine += 1
         return id_attuale
 
     def salvaTutto(self, nomeFile):
@@ -30,9 +30,9 @@ class Dati:
                 self.__dict__.update(obj.__dict__)
                 
                 # Verifiche di sicurezza per retrocompatibilità
-                if not hasattr(self, 'storico_ordini'):
-                    self.storico_ordini = []
-                if not hasattr(self, 'prossimo_id_ordine'):
-                    self.prossimo_id_ordine = 1
+                if not hasattr(self, 'storicoOrdini'):
+                    self.storicoOrdini = []
+                if not hasattr(self, 'prossimoIdOrdine'):
+                    self.prossimoIdOrdine = 1
         except Exception as e:
             print(f"Errore nel caricamento: {e}")

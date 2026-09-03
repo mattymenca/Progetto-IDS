@@ -18,3 +18,4 @@ class Magazzino():
         for prodotto in self.inventario:
             if nomeProdotto == prodotto.getNomeProdotto():
                 return prodotto
+        return None
