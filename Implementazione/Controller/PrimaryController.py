@@ -1,5 +1,10 @@
-from Model.Gestore.GestoreUtenti import GestoreUtenti
 from PyQt5.QtWidgets import QMainWindow
+
+# Import dei gestori ad istanza
+from Model.Gestore.GestoreUtenti import GestoreUtenti
+from Model.Gestore.GestoreMagazzino import GestoreMagazzino
+from Model.Gestore.GestoreOrdini import GestoreOrdini
+from Model.Gestore.GestoreConti import GestoreConti
 
 class PrimaryController:
     """
@@ -10,7 +15,12 @@ class PrimaryController:
         self.dati = dati
         self.active_controllers = {}
         self.current_controller = None
-        self.gestore_utenti = GestoreUtenti(dati)
+        
+        # Inizializzazione centralizzata dei gestori ad istanza
+        self.gestore_utenti = GestoreUtenti(self.dati)
+        self.gestore_magazzino = GestoreMagazzino(self.dati)
+        self.gestore_ordini = GestoreOrdini(self.dati)
+        self.gestore_conti = GestoreConti(self.dati, self.gestore_ordini)
 
     def mostra_finestra(self, ControllerClass, *args, **kwargs):
         start_maximized = kwargs.pop('start_maximized', False)

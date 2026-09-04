@@ -1,36 +1,35 @@
-from Model.Magazzino import Magazzino, Prodotto, StatoProdotto
+from Model.Dati import Dati
+from Model.Magazzino import Prodotto, StatoProdotto
 
 class GestoreMagazzino:
-    @staticmethod
-    def creaNuovoProdotto(magazzino: Magazzino, nome: str, quantita: int, prezzo: float, costo: float, fornitore: str, avvisi: bool, soglia: int):
+    def __init__(self, dati: Dati):
+        self.dati = dati
+
+    def creaNuovoProdotto(self, nome: str, quantita: int, prezzo: float, costo: float, fornitore: str, avvisi: bool, soglia: int) -> Prodotto:
         nuovoProdotto = Prodotto(nome, quantita, prezzo, costo, fornitore, avvisi, soglia)
-        magazzino.aggiungiProdotto(nuovoProdotto)
+        self.dati.prodotti.append(nuovoProdotto)
+        return nuovoProdotto
         
-    @staticmethod
-    def modificaDettagliProdotto(prodotto: Prodotto, **kwargs):
+    def modificaDettagliProdotto(self, prodotto: Prodotto, **kwargs) -> bool:
         if prodotto is None:
             return False
         
         for attr, valore_attr in kwargs.items():
             if hasattr(prodotto, attr):
                 setattr(prodotto, attr, valore_attr)
-                
             else:
                 print("Attributo non esistente")
                 return False
         return True
     
-    @staticmethod
-    def modificaStatoProdotto(prodotto: Prodotto, statoProdotto: StatoProdotto):
+    def modificaStatoProdotto(self, prodotto: Prodotto, statoProdotto: StatoProdotto) -> bool:
         if prodotto is not None:
             prodotto.setStatoProdotto(statoProdotto)
             return True
         return False
     
-    @staticmethod
-    def eliminaProdotto(magazzino: Magazzino, prodotto: Prodotto):
-        if prodotto in magazzino.getInventario():
-            magazzino.getInventario().remove(prodotto)
+    def eliminaProdotto(self, prodotto: Prodotto) -> bool:
+        if prodotto in self.dati.prodotti:
+            self.dati.prodotti.remove(prodotto)
             return True
-
         return False
