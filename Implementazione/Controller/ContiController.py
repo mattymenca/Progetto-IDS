@@ -32,21 +32,39 @@ class ContiController(QMainWindow, Ui_ContiWindow):
             QMessageBox.warning(self, "Attenzione", "Nessun ordine aperto selezionato.")
             return
 
-        # DELEGA AL GESTORE CONTI
-        totale = GestoreConti.calcolaTotale(ordine)
-        self.lbl_totale.setText(f"Totale da Pagare: {totale:.2f} €")
+        try:
+            # DELEGA AL GESTORE CONTI
+            totale = GestoreConti.calcolaTotale(ordine)
+            self.lbl_totale.setText(f"Totale da Pagare: {totale:.2f} €")
+        except Exception as e:
+            QMessageBox.critical(self, "Errore Calcola Totale", f"Si è verificato un errore: {e}")
 
     def paga_e_chiudi(self):
         ordine = self.combo_ordini.currentData()
         metodo = self.combo_pagamento.currentData()
 
-        if not ordine: return
+        if not ordine:
+            QMessageBox.warning(self, "Attenzione", "Nessun ordine selezionato.")
+            return
 
-        # DELEGA AL GESTORE CONTI
-        conto = GestoreConti.emettiContoEChiudi(self.primary_controller.dati, ordine, metodo)
+        try:
+            # DELEGA SICURA AL GESTORE CONTI
+            conto = GestoreConti.emettiContoEChiudi(self.primary_controller.dati, ordine, metodo)
 
-        QMessageBox.information(self, "Pagamento Effettuato", f"Conto di {conto.getTotale():.2f}€ incassato con successo!")
-        self.torna_indietro()
+            if conto:
+                totale_incassato = conto.getTotale() if hasattr(conto, 'getTotale') else GestoreConti.calcolaTotale(ordine)
+                QMessageBox.information(
+                    self, 
+                    "Pagamento Effettuato", 
+                    f"Conto di {totale_incassato:.2f}€ incassato con successo!\nScontrino emesso."
+                )
+            else:
+                QMessageBox.warning(self, "Attenzione", "Impossibile completare il conto per questo ordine.")
+
+            # RITORNA AL MENU OPERATIVO
+            self.torna_indietro()
+        except Exception as e:
+            QMessageBox.critical(self, "Errore Chiusura Conto", f"Si è verificato un errore durante l'incasso: {e}")
 
     def torna_indietro(self):
         from Controller.Dipendenti import DipendentiController

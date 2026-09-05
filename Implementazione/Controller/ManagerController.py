@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QMessageBox, QInputDialog, QDialog, QVBoxLayout, QListWidget, QTabWidget, QWidget
 from View.manager import Ui_ManagerWindow
+from Model.Utente.Dipendente import Dipendente
 from Model.Utente.StatoDipendente import StatoDipendente
+from Model.Utente.Contratto import Contratto
 from Model.Utente.TipoContratto import TipoContratto
 from Model.Gestore.GestoreUtenti import GestoreUtenti
 
@@ -41,13 +43,19 @@ class DettagliPersonaDialog(QDialog):
             list_c.setStyleSheet("background-color: #34495e; color: white;")
             
             for c in persona.getStoricoContratti():
-                tipo = c.getTipoContratto().value.title() if isinstance(c.getTipoContratto(), TipoContratto) else str(c.getTipoContratto())
-                list_c.addItem(f"Contratto: {tipo} | Salario: {c.getSalario():.2f}€ | Inizio: {c.getDataInizio()} - Fine: {c.getDataFine()}")
+                tipo_obj = c.getTipoContratto()
+                tipo_str = tipo_obj.value.title() if isinstance(tipo_obj, TipoContratto) else str(tipo_obj)
+                
+                # Se indeterminato, mostra trattini per la data fine
+                d_fine_display = "---" if tipo_obj == TipoContratto.TEMPO_INDETERMINATO else c.getDataFine()
+                
+                list_c.addItem(f"Contratto: {tipo_str} | Salario: {c.getSalario():.2f}€ | Inizio: {c.getDataInizio()} - Fine: {d_fine_display}")
             
             layout_c.addWidget(list_c)
             tabs.addTab(tab_contratti, "Storico Contratti")
 
         layout.addWidget(tabs)
+
 
 class ManagerController(QMainWindow, Ui_ManagerWindow):
     def __init__(self, primary_controller):
@@ -60,10 +68,21 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
         self.btn_profilo_manager.clicked.connect(self.apri_profilo_manager)
         self.btn_indietro.clicked.connect(self.logout)
 
+        # Rileva cambio selezione tipo contratto per disattivare Data Fine se Indeterminato
+        self.combo_tipo_contratto.currentIndexChanged.connect(self.gestisci_cambio_tipo_contratto)
+
         self.tableWidget.itemDoubleClicked.connect(self.apri_dettagli_dipendente)
         self.tableWidget.cellChanged.connect(self.salva_modifica_cella)
 
         self.aggiorna_vista()
+
+    def gestisci_cambio_tipo_contratto(self):
+        """Disattiva il campo Data Fine se il contratto è A Tempo Indeterminato"""
+        tipo_selezionato = self.combo_tipo_contratto.currentData()
+        if tipo_selezionato == TipoContratto.TEMPO_INDETERMINATO:
+            self.date_fine.setEnabled(False)
+        else:
+            self.date_fine.setEnabled(True)
 
     def aggiorna_vista(self):
         self.tableWidget.blockSignals(True)
@@ -84,10 +103,13 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
             storico = d.getStoricoContratti()
             if storico:
                 ultimo = storico[-1]
-                tipo_str = ultimo.getTipoContratto().value.title() if isinstance(ultimo.getTipoContratto(), TipoContratto) else str(ultimo.getTipoContratto())
+                tipo_obj = ultimo.getTipoContratto()
+                tipo_str = tipo_obj.value.title() if isinstance(tipo_obj, TipoContratto) else str(tipo_obj)
                 salario_str = f"{ultimo.getSalario():.2f}"
                 d_inizio = str(ultimo.getDataInizio())
-                d_fine = str(ultimo.getDataFine())
+                
+                # Se Indeterminato, mostra trattini '---'
+                d_fine = "---" if tipo_obj == TipoContratto.TEMPO_INDETERMINATO else str(ultimo.getDataFine())
             else:
                 tipo_str, salario_str, d_inizio, d_fine = "N/D", "0.00", "N/D", "N/D"
 
@@ -100,6 +122,7 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
             self.tableWidget.setItem(row, 7, QTableWidgetItem(stato_str))
 
         self.tableWidget.blockSignals(False)
+        self.gestisci_cambio_tipo_contratto()
 
     def apri_profilo_manager(self):
         manager = self.primary_controller.dati.manager
@@ -121,16 +144,23 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
             salario = float(self.input_salario.text())
             tipo_contratto = self.combo_tipo_contratto.currentData()
             d_inizio = self.date_inizio.date().toString("yyyy-MM-dd")
-            d_fine = self.date_fine.date().toString("yyyy-MM-dd")
+
+            # Se Indeterminato, la data fine è '---'
+            if tipo_contratto == TipoContratto.TEMPO_INDETERMINATO:
+                d_fine = "---"
+            else:
+                d_fine = self.date_fine.date().toString("yyyy-MM-dd")
 
             # DELEGA AL GESTORE UTENTI
-            self.primary_controller.gestore_utenti.assumiDipendente(nome, cognome, eta, tipo_contratto, salario, d_inizio, d_fine)
+            self.primary_controller.gestore_utenti.assumiDipendente(
+                nome, cognome, eta, tipo_contratto, salario, d_inizio, d_fine
+            )
 
             self.aggiorna_vista()
             self.pulisci_input()
-            QMessageBox.information(self, "Successo", f"Dipendente {nome} assunto!")
+            QMessageBox.information(self, "Successo", f"Dipendente {nome} assunto con successo!")
         except ValueError:
-            QMessageBox.warning(self, "Errore", "Dati inseriti non validi.")
+            QMessageBox.warning(self, "Errore Inserimento", "Controlla di aver compilato tutti i campi correttamente.")
 
     def salva_modifica_cella(self, row, column):
         try:
@@ -139,6 +169,7 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
 
             # DELEGA AL GESTORE UTENTI
             self.primary_controller.gestore_utenti.salvaModificaCella(dipendente, column, nuovo_valore)
+            self.aggiorna_vista()
         except Exception:
             QMessageBox.warning(self, "Errore", "Valore inserito non valido!")
             self.aggiorna_vista()
@@ -152,7 +183,6 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
             if ok and scelta:
                 for s in StatoDipendente:
                     if s.value.upper() == scelta:
-                        # DELEGA AL GESTORE UTENTI
                         self.primary_controller.gestore_utenti.cambiaStatoDipendente(dipendente, s)
                         break
                 self.aggiorna_vista()

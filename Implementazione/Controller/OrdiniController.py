@@ -19,14 +19,12 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         self.btn_annulla_ordine.clicked.connect(self.annulla_ordine_selezionato)
         self.btn_indietro.clicked.connect(self.torna_indietro)
 
-        # Filtri dinamici in tempo reale
         self.input_filtro_prod.textChanged.connect(self.filtra_prodotti)
         self.input_cerca_id.textChanged.connect(self.filtra_ordini_attivi)
 
         self.aggiorna_vista()
 
     def aggiorna_vista(self):
-        # Popola Operatori
         self.combo_operatore.clear()
         for d in self.primary_controller.dati.dipendenti:
             self.combo_operatore.addItem(f"{d.getNome()} {d.getCognome()}", d)
@@ -60,7 +58,7 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
 
     def prepara_nuovo_ordine(self):
         self.ordine_in_modifica = None
-        self.id_corrente = self.primary_controller.dati.prossimo_id_ordine
+        self.id_corrente = getattr(self.primary_controller.dati, 'prossimo_id_ordine', 1)
         self.lbl_id_generato.setText(f"ID Ordine: #{self.id_corrente}")
         self.carrello.clear()
         self.list_riepilogo.clear()
@@ -84,28 +82,31 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
             QMessageBox.warning(self, "Attenzione", "Il carrello è vuoto!")
             return
 
-        operatore = self.combo_operatore.currentData()
-        coperti = self.spin_coperti.value()
+        try:
+            operatore = self.combo_operatore.currentData()
+            coperti = self.spin_coperti.value()
 
-        # DELEGA AL GESTORE ORDINI
-        if self.ordine_in_modifica:
-            GestoreOrdini.modificaOrdine(
-                dati=self.primary_controller.dati,
-                ordine_vecchio=self.ordine_in_modifica,
-                operatore=operatore,
-                nuovi_prodotti_carrello=self.carrello,
-                nuovi_coperti=coperti
-            )
-        else:
-            GestoreOrdini.creaOrdine(
-                dati=self.primary_controller.dati,
-                operatore=operatore,
-                prodotti_carrello=self.carrello,
-                coperti=coperti
-            )
+            # DELEGA SICURA AL GESTORE ORDINI
+            if self.ordine_in_modifica:
+                GestoreOrdini.modificaOrdine(
+                    dati=self.primary_controller.dati,
+                    ordine_vecchio=self.ordine_in_modifica,
+                    operatore=operatore,
+                    nuovi_prodotti_carrello=self.carrello,
+                    nuovi_coperti=coperti
+                )
+            else:
+                GestoreOrdini.creaOrdine(
+                    dati=self.primary_controller.dati,
+                    operatore=operatore,
+                    prodotti_carrello=self.carrello,
+                    coperti=coperti
+                )
 
-        QMessageBox.information(self, "Successo", f"Ordine #{self.id_corrente} salvato con successo!")
-        self.torna_indietro()
+            QMessageBox.information(self, "Successo", f"Ordine salvato con successo!")
+            self.torna_indietro()
+        except Exception as e:
+            QMessageBox.critical(self, "Errore Salva Ordine", f"Si è verificato un errore: {e}")
 
     def carica_ordine_selezionato(self):
         ordine_selezionato = self.combo_ordini_trovati.currentData()
@@ -115,7 +116,6 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
             self.lbl_id_generato.setText(f"ID Ordine (In Modifica): #{self.id_corrente}")
             self.spin_coperti.setValue(ordine_selezionato.getNumeroCoperti())
             
-            # Carica carrello
             self.carrello.clear()
             self.list_riepilogo.clear()
             for po in ordine_selezionato.getProdottiOrdinati():
@@ -131,10 +131,12 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
     def annulla_ordine_selezionato(self):
         ordine_selezionato = self.combo_ordini_trovati.currentData()
         if ordine_selezionato:
-            # DELEGA AL GESTORE ORDINI
-            GestoreOrdini.annullaOrdine(self.primary_controller.dati, ordine_selezionato)
-            QMessageBox.information(self, "Annullato", f"Ordine #{ordine_selezionato.getId()} annullato e scorte ripristinate!")
-            self.aggiorna_vista()
+            try:
+                GestoreOrdini.annullaOrdine(self.primary_controller.dati, ordine_selezionato)
+                QMessageBox.information(self, "Annullato", f"Ordine #{ordine_selezionato.getId()} annullato e scorte ripristinate!")
+                self.aggiorna_vista()
+            except Exception as e:
+                QMessageBox.critical(self, "Errore Annullamento", f"Si è verificato un errore: {e}")
         else:
             QMessageBox.warning(self, "Attenzione", "Nessun ordine selezionato.")
 

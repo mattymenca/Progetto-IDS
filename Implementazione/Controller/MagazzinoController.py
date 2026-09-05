@@ -50,18 +50,22 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
     def rifornisci_prodotto(self):
         row = self.tableWidget.currentRow()
         if row >= 0:
-            prodotto = self.primary_controller.dati.prodotti[row]
-            qta_aggiuntiva, ok = QInputDialog.getInt(
-                self, "Rifornisci Prodotto", 
-                f"Quanti pezzi vuoi aggiungere a '{prodotto.getNomeProdotto()}'?",
-                value=10, min=1, max=1000
-            )
-            if ok:
-                # DELEGA AL GESTORE MAGAZZINO
-                GestoreMagazzino.rifornisciProdotto(self.primary_controller.dati, prodotto, qta_aggiuntiva)
-                self.aggiorna_vista()
+            try:
+                prodotto = self.primary_controller.dati.prodotti[row]
+                qta_aggiuntiva, ok = QInputDialog.getInt(
+                    self, "Rifornisci Prodotto", 
+                    f"Quanti pezzi vuoi aggiungere a '{prodotto.getNomeProdotto()}'?",
+                    value=10, min=1, max=1000
+                )
+                if ok:
+                    # DELEGA SICURA AL GESTORE MAGAZZINO
+                    GestoreMagazzino.rifornisciProdotto(self.primary_controller.dati, prodotto, qta_aggiuntiva)
+                    self.aggiorna_vista()
+                    QMessageBox.information(self, "Rifornito", f"Aggiunti {qta_aggiuntiva} pezzi a {prodotto.getNomeProdotto()}!")
+            except Exception as e:
+                QMessageBox.critical(self, "Errore", f"Si è verificato un errore durante il rifornimento: {e}")
         else:
-            QMessageBox.warning(self, "Attenzione", "Seleziona prima un prodotto.")
+            QMessageBox.warning(self, "Attenzione", "Seleziona prima un prodotto dalla tabella.")
 
     def salva_modifica_cella(self, row, column):
         try:
@@ -90,6 +94,7 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
             GestoreMagazzino.aggiungiProdotto(self.primary_controller.dati, nome, qta, prezzo, costo, fornitore, soglia)
             self.aggiorna_vista()
             self.pulisci_input()
+            QMessageBox.information(self, "Successo", "Prodotto aggiunto al magazzino!")
         except ValueError:
             QMessageBox.warning(self, "Errore", "Dati inseriti non validi.")
 
@@ -99,6 +104,9 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
             # DELEGA AL GESTORE MAGAZZINO
             GestoreMagazzino.eliminaProdotto(self.primary_controller.dati, row)
             self.aggiorna_vista()
+            QMessageBox.information(self, "Successo", "Prodotto rimosso!")
+        else:
+            QMessageBox.warning(self, "Attenzione", "Seleziona una riga da eliminare.")
 
     def pulisci_input(self):
         self.input_nome.clear(); self.input_qta.clear()

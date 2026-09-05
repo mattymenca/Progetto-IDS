@@ -1,5 +1,7 @@
 import unittest
+import sys
 
+sys.dont_write_bytecode = True
 # --- Import delle classi del Modello ---
 from Model.Dati import Dati
 from Model.Magazzino.Prodotto import Prodotto
