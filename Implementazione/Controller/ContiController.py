@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from View.conti import Ui_ContiWindow
 from Model.Conto.MetodoPagamento import MetodoPagamento
+from Model.Gestore.GestoreConti import GestoreConti
 
 class ContiController(QMainWindow, Ui_ContiWindow):
     def __init__(self, primary_controller):
@@ -31,10 +32,8 @@ class ContiController(QMainWindow, Ui_ContiWindow):
             QMessageBox.warning(self, "Attenzione", "Nessun ordine aperto selezionato.")
             return
 
-        totale = 2 * ordine.getNumeroCoperti()
-        for p in ordine.getProdottiOrdinati():
-            totale += p.getPrezzo() * p.getQuantita()
-
+        # DELEGA AL GESTORE CONTI
+        totale = GestoreConti.calcolaTotale(ordine)
         self.lbl_totale.setText(f"Totale da Pagare: {totale:.2f} €")
 
     def paga_e_chiudi(self):
@@ -43,18 +42,10 @@ class ContiController(QMainWindow, Ui_ContiWindow):
 
         if not ordine: return
 
-        totale = 2 * ordine.getNumeroCoperti()
-        for p in ordine.getProdottiOrdinati():
-            totale += p.getPrezzo() * p.getQuantita()
+        # DELEGA AL GESTORE CONTI
+        conto = GestoreConti.emettiContoEChiudi(self.primary_controller.dati, ordine, metodo)
 
-        # Sposta l'ordine dagli ordini attivi allo STORICO ORDINI della classe Dati
-        if ordine in self.primary_controller.dati.ordini:
-            self.primary_controller.dati.ordini.remove(ordine)
-            self.primary_controller.dati.storicoOrdini.append(ordine)
-
-        self.primary_controller.salva_dati()
-
-        QMessageBox.information(self, "Pagamento Effettuato", f"Conto di {totale:.2f}€ incassato con successo!")
+        QMessageBox.information(self, "Pagamento Effettuato", f"Conto di {conto.getTotale():.2f}€ incassato con successo!")
         self.torna_indietro()
 
     def torna_indietro(self):

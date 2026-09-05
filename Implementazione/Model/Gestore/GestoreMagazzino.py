@@ -1,35 +1,43 @@
-from Model.Dati import Dati
-from Model.Magazzino import Prodotto, StatoProdotto
+from Model.Magazzino.Prodotto import Prodotto
+from Model.Magazzino.StatoProdotto import StatoProdotto
 
 class GestoreMagazzino:
-    def __init__(self, dati: Dati):
-        self.dati = dati
+    @staticmethod
+    def aggiungiProdotto(dati, nome, qta, prezzo, costo, fornitore, soglia):
+        nuovo = Prodotto(nome, qta, prezzo, costo, fornitore, True, soglia)
+        dati.prodotti.append(nuovo)
+        dati.salvaTutto("dati.pkl")
+        return nuovo
 
-    def creaNuovoProdotto(self, nome: str, quantita: int, prezzo: float, costo: float, fornitore: str, avvisi: bool, soglia: int) -> Prodotto:
-        nuovoProdotto = Prodotto(nome, quantita, prezzo, costo, fornitore, avvisi, soglia)
-        self.dati.prodotti.append(nuovoProdotto)
-        return nuovoProdotto
-        
-    def modificaDettagliProdotto(self, prodotto: Prodotto, **kwargs) -> bool:
-        if prodotto is None:
-            return False
-        
-        for attr, valore_attr in kwargs.items():
-            if hasattr(prodotto, attr):
-                setattr(prodotto, attr, valore_attr)
-            else:
-                print("Attributo non esistente")
-                return False
-        return True
-    
-    def modificaStatoProdotto(self, prodotto: Prodotto, statoProdotto: StatoProdotto) -> bool:
-        if prodotto is not None:
-            prodotto.setStatoProdotto(statoProdotto)
+    @staticmethod
+    def rifornisciProdotto(dati, prodotto, qta_aggiuntiva):
+        nuova_qta = prodotto.getQuantita() + qta_aggiuntiva
+        prodotto.modificaQuantita(nuova_qta)
+        prodotto.setStatoProdotto(StatoProdotto.RIFORNITO)
+        dati.salvaTutto("dati.pkl")
+
+    @staticmethod
+    def eliminaProdotto(dati, indice_prodotto):
+        if 0 <= indice_prodotto < len(dati.prodotti):
+            dati.prodotti.pop(indice_prodotto)
+            dati.salvaTutto("dati.pkl")
             return True
         return False
-    
-    def eliminaProdotto(self, prodotto: Prodotto) -> bool:
-        if prodotto in self.dati.prodotti:
-            self.dati.prodotti.remove(prodotto)
-            return True
-        return False
+
+    @staticmethod
+    def salvaModificaCella(dati, prodotto, column, valore_testo):
+        """Modifica l'attributo specifico del prodotto a seconda della colonna modificata"""
+        if column == 0: 
+            prodotto.setNome(valore_testo)
+        elif column == 1: 
+            prodotto.modificaQuantita(int(valore_testo))
+        elif column == 2: 
+            prodotto.setSoglia(int(valore_testo))
+        elif column == 3: 
+            prodotto.setPrezzo(float(valore_testo))
+        elif column == 4: 
+            prodotto.setCosto(float(valore_testo))
+        elif column == 5: 
+            prodotto.modificaFornitore(valore_testo)
+
+        dati.salvaTutto("dati.pkl")

@@ -1,63 +1,48 @@
-from Model.Dati import Dati
-from Model.Ordine import StatoOrdine
-from Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
 from Model.Ordine.ordine import Ordine
+from Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
+from Model.Ordine.StatoOrdine import StatoOrdine
 
 class GestoreOrdini:
-    def __init__(self, dati: Dati):
-        self.dati = dati
-
-    def creaNuovoOrdine(self, prodottiOrdinati: list[ProdottoOrdinato], numeroCoperti: int) -> Ordine:
-        id_ordine = self.dati.generaNuovoIdOrdine()
-        nuovoOrdine = Ordine(id_ordine, prodottiOrdinati, numeroCoperti)
+    @staticmethod
+    def creaOrdine(dati, operatore, prodotti_carrello, coperti):
+        """Crea un nuovo ordine, scala le scorte dal magazzino e lo associa all'operatore"""
+        id_ordine = dati.genera_nuovo_id_ordine()
         
-        self.dati.ordini.append(nuovoOrdine)
-        self.approvaOrdine(nuovoOrdine)
-        return nuovoOrdine
+        lista_po = []
+        for po, prod_originale in prodotti_carrello:
+            lista_po.append(po)
+            # Scala la quantità dal magazzino
+            prod_originale.modificaQuantita(prod_originale.getQuantita() - po.getQuantita())
 
-    def approvaOrdine(self, ordine: Ordine) -> bool:
-        if ordine is None:
-            return False
+        nuovo_ordine = Ordine(id_ordine, lista_po, coperti)
+        nuovo_ordine.setStato(StatoOrdine.IN_CORSO)
         
-        for prodottoOrdinato in ordine.getProdottiOrdinati():
-            nomeProdotto = prodottoOrdinato.getNome()
-            prodotto = next((p for p in self.dati.prodotti if p.getNome() == nomeProdotto), None)
+        dati.ordini.append(nuovo_ordine)
 
-            if prodotto is None or prodottoOrdinato.getQuantita() > prodotto.getQuantita():
-                self.impostaStatoOrdine(ordine, StatoOrdine.NON_APPROVATO)
-                print("Ordine non approvato\n")
-                return False
+        # Associa l'ordine alla Persona (Dipendente o Manager)
+        if operatore and hasattr(operatore, 'aggiungiOrdine'):
+            operatore.aggiungiOrdine(nuovo_ordine)
 
-        self.impostaStatoOrdine(ordine, StatoOrdine.IN_CORSO)
-        print("Ordine in corso\n")
-        return True
+        dati.salvaTutto("dati.pkl")
+        return nuovo_ordine
 
-    def impostaStatoOrdine(self, ordine: Ordine, stato: StatoOrdine) -> bool:
-        if ordine is not None:
-            ordine.setStatoOrdine(stato)
+    @staticmethod
+    def annullaOrdine(dati, ordine):
+        """Annulla un ordine attivo e ripristina le scorte in magazzino"""
+        if ordine in dati.ordini:
+            # Ripristina scorte
+            for po in ordine.getProdottiOrdinati():
+                for p in dati.prodotti:
+                    if p.getNomeProdotto() == po.getNome():
+                        p.modificaQuantita(p.getQuantita() + po.getQuantita())
+
+            dati.ordini.remove(ordine)
+            dati.salvaTutto("dati.pkl")
             return True
         return False
 
-    def concludiOrdine(self, ordine: Ordine) -> bool:
-        if ordine is None:
-            return False
-        
-        self.impostaStatoOrdine(ordine, StatoOrdine.CONCLUSO)
-        
-        if ordine in self.dati.ordini:
-            self.dati.ordini.remove(ordine)
-            self.dati.storicoOrdini.append(ordine)
-            return True
-        return False
-
-    def restituisciOrdine(self, idOrdine: int):
-        for ordine in self.dati.ordini:
-            if idOrdine == ordine.getId():
-                return ordine
-        return None
-
-    def eliminaOrdine(self, ordine: Ordine) -> bool:
-        if ordine in self.dati.ordini:
-            self.dati.ordini.remove(ordine)
-            return True
-        return False
+    @staticmethod
+    def modificaOrdine(dati, ordine_vecchio, operatore, nuovi_prodotti_carrello, nuovi_coperti):
+        """Modifica un ordine esistente ripristinando prima le vecchie scorte"""
+        GestoreOrdini.annullaOrdine(dati, ordine_vecchio)
+        return GestoreOrdini.creaOrdine(dati, operatore, nuovi_prodotti_carrello, nuovi_coperti)

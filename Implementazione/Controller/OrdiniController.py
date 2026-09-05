@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from View.ordini import Ui_OrdiniWindow
 from Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
-from Model.Ordine.ordine import Ordine
+from Model.Gestore.GestoreOrdini import GestoreOrdini
 
 class OrdiniController(QMainWindow, Ui_OrdiniWindow):
     def __init__(self, primary_controller):
@@ -19,14 +19,11 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         self.btn_annulla_ordine.clicked.connect(self.annulla_ordine_selezionato)
         self.btn_indietro.clicked.connect(self.torna_indietro)
 
-        # Ricerca dinamica prodotti e ordini mentre si digita
+        # Filtri dinamici in tempo reale
         self.input_filtro_prod.textChanged.connect(self.filtra_prodotti)
         self.input_cerca_id.textChanged.connect(self.filtra_ordini_attivi)
 
         self.aggiorna_vista()
-
-    def genera_id_incrementale(self):
-        return self.primary_controller.dati.generaNuovoIdOrdine()
 
     def aggiorna_vista(self):
         # Popola Operatori
@@ -41,7 +38,6 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         self.filtra_ordini_attivi("")
         self.prepara_nuovo_ordine()
 
-    # --- RICERCA PRODOTTI ---
     def popola_prodotti(self, filtro=""):
         self.combo_prodotti.clear()
         for p in self.primary_controller.dati.prodotti:
@@ -51,7 +47,6 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
     def filtra_prodotti(self, testo):
         self.popola_prodotti(testo)
 
-    # --- RICERCA DINAMICA ORDINI ESISTENTI ---
     def popola_ordini_attivi(self, filtro=""):
         self.combo_ordini_trovati.clear()
         ordini = self.primary_controller.dati.ordini
@@ -65,7 +60,7 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
 
     def prepara_nuovo_ordine(self):
         self.ordine_in_modifica = None
-        self.id_corrente = self.genera_id_incrementale()
+        self.id_corrente = self.primary_controller.dati.prossimo_id_ordine
         self.lbl_id_generato.setText(f"ID Ordine: #{self.id_corrente}")
         self.carrello.clear()
         self.list_riepilogo.clear()
@@ -92,21 +87,23 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         operatore = self.combo_operatore.currentData()
         coperti = self.spin_coperti.value()
 
+        # DELEGA AL GESTORE ORDINI
         if self.ordine_in_modifica:
-            self.primary_controller.dati.ordini.remove(self.ordine_in_modifica)
+            GestoreOrdini.modificaOrdine(
+                dati=self.primary_controller.dati,
+                ordine_vecchio=self.ordine_in_modifica,
+                operatore=operatore,
+                nuovi_prodotti_carrello=self.carrello,
+                nuovi_coperti=coperti
+            )
+        else:
+            GestoreOrdini.creaOrdine(
+                dati=self.primary_controller.dati,
+                operatore=operatore,
+                prodotti_carrello=self.carrello,
+                coperti=coperti
+            )
 
-        lista_po = []
-        for po, prod_orig in self.carrello:
-            lista_po.append(po)
-            prod_orig.setQuantita(prod_orig.getQuantita() - po.getQuantita())
-
-        nuovo_ordine = Ordine(self.id_corrente, lista_po, coperti)
-        self.primary_controller.dati.ordini.append(nuovo_ordine)
-
-        if operatore and hasattr(operatore, 'aggiungiOrdine'):
-            operatore.aggiungiOrdine(nuovo_ordine)
-
-        self.primary_controller.salva_dati()
         QMessageBox.information(self, "Successo", f"Ordine #{self.id_corrente} salvato con successo!")
         self.torna_indietro()
 
@@ -118,12 +115,7 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
             self.lbl_id_generato.setText(f"ID Ordine (In Modifica): #{self.id_corrente}")
             self.spin_coperti.setValue(ordine_selezionato.getNumeroCoperti())
             
-            # Ripristina temporaneamente le scorte per consentire la nuova modifica
-            for po in ordine_selezionato.getProdottiOrdinati():
-                for p in self.primary_controller.dati.prodotti:
-                    if p.getNomeProdotto() == po.getNome():
-                        p.setQuantita(p.getQuantita() + po.getQuantita())
-
+            # Carica carrello
             self.carrello.clear()
             self.list_riepilogo.clear()
             for po in ordine_selezionato.getProdottiOrdinati():
@@ -134,23 +126,17 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
 
             QMessageBox.information(self, "Ordine Caricato", f"Ordine #{self.id_corrente} caricato nel riepilogo.")
         else:
-            QMessageBox.warning(self, "Attenzione", "Nessun ordine selezionato dalla lista.")
+            QMessageBox.warning(self, "Attenzione", "Nessun ordine selezionato.")
 
     def annulla_ordine_selezionato(self):
         ordine_selezionato = self.combo_ordini_trovati.currentData()
         if ordine_selezionato:
-            # Ripristina scorte
-            for po in ordine_selezionato.getProdottiOrdinati():
-                for p in self.primary_controller.dati.prodotti:
-                    if p.getNomeProdotto() == po.getNome():
-                        p.setQuantita(p.getQuantita() + po.getQuantita())
-
-            self.primary_controller.dati.ordini.remove(ordine_selezionato)
-            self.primary_controller.salva_dati()
+            # DELEGA AL GESTORE ORDINI
+            GestoreOrdini.annullaOrdine(self.primary_controller.dati, ordine_selezionato)
             QMessageBox.information(self, "Annullato", f"Ordine #{ordine_selezionato.getId()} annullato e scorte ripristinate!")
             self.aggiorna_vista()
         else:
-            QMessageBox.warning(self, "Attenzione", "Nessun ordine selezionato dalla lista.")
+            QMessageBox.warning(self, "Attenzione", "Nessun ordine selezionato.")
 
     def torna_indietro(self):
         from Controller.Dipendenti import DipendentiController

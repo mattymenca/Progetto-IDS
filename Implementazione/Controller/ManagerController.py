@@ -1,12 +1,11 @@
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QMessageBox, QInputDialog, QDialog, QVBoxLayout, QListWidget, QTabWidget, QWidget
 from View.manager import Ui_ManagerWindow
-from Model.Utente.Dipendente import Dipendente
 from Model.Utente.StatoDipendente import StatoDipendente
-from Model.Utente.Contratto import Contratto
 from Model.Utente.TipoContratto import TipoContratto
+from Model.Gestore.GestoreUtenti import GestoreUtenti
 
 class DettagliPersonaDialog(QDialog):
-    """Finestra Pop-up generica per mostrare lo storico ordini (e contratti) di qualsiasi Persona (Manager o Dipendente)"""
+    """Finestra Pop-up per mostrare lo storico ordini e contratti"""
     def __init__(self, persona, parent=None):
         super().__init__(parent)
         self.setWindowTitle(f"Scheda e Storico: {persona.getNome()} {persona.getCognome()}")
@@ -107,8 +106,6 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
         if manager:
             dialog = DettagliPersonaDialog(manager, self)
             dialog.exec_()
-        else:
-            QMessageBox.warning(self, "Errore", "Nessun Manager registrato.")
 
     def apri_dettagli_dipendente(self, item):
         row = item.row()
@@ -123,15 +120,11 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
             eta = int(self.input_eta.text())
             salario = float(self.input_salario.text())
             tipo_contratto = self.combo_tipo_contratto.currentData()
-
             d_inizio = self.date_inizio.date().toString("yyyy-MM-dd")
             d_fine = self.date_fine.date().toString("yyyy-MM-dd")
 
-            nuovo_contratto = Contratto(tipo_contratto, d_inizio, d_fine, salario)
-            nuovo_dipendente = Dipendente(nome, cognome, eta, [], [nuovo_contratto], StatoDipendente.IMPIEGATO)
-
-            self.primary_controller.dati.dipendenti.append(nuovo_dipendente)
-            self.primary_controller.salva_dati()
+            # DELEGA AL GESTORE UTENTI
+            self.primary_controller.gestore_utenti.assumiDipendente(nome, cognome, eta, tipo_contratto, salario, d_inizio, d_fine)
 
             self.aggiorna_vista()
             self.pulisci_input()
@@ -144,20 +137,10 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
             dipendente = self.primary_controller.dati.dipendenti[row]
             nuovo_valore = self.tableWidget.item(row, column).text()
 
-            if column == 0: dipendente.setNome(nuovo_valore)
-            elif column == 1: dipendente.setCognome(nuovo_valore)
-            elif column == 2: dipendente.setEta(int(nuovo_valore))
-            elif column in [3, 4, 5, 6]:
-                storico = dipendente.getStoricoContratti()
-                if storico:
-                    c = storico[-1]
-                    if column == 4: c.modificaSalario(float(nuovo_valore))
-                    elif column == 5: c.setDataInizio(nuovo_valore)
-                    elif column == 6: c.setDataFine(nuovo_valore)
-
-            self.primary_controller.salva_dati()
+            # DELEGA AL GESTORE UTENTI
+            self.primary_controller.gestore_utenti.salvaModificaCella(dipendente, column, nuovo_valore)
         except Exception:
-            QMessageBox.warning(self, "Errore", "Valore non valido!")
+            QMessageBox.warning(self, "Errore", "Valore inserito non valido!")
             self.aggiorna_vista()
 
     def cambia_stato_dipendente(self):
@@ -169,9 +152,9 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
             if ok and scelta:
                 for s in StatoDipendente:
                     if s.value.upper() == scelta:
-                        dipendente.modificaStatoDipendente(s)
+                        # DELEGA AL GESTORE UTENTI
+                        self.primary_controller.gestore_utenti.cambiaStatoDipendente(dipendente, s)
                         break
-                self.primary_controller.salva_dati()
                 self.aggiorna_vista()
 
     def pulisci_input(self):

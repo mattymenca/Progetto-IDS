@@ -1,17 +1,34 @@
-from Model.Dati import Dati
-from Model.Conto import Conto, MetodoPagamento
-from Model.Ordine.ordine import Ordine
-from Model.Gestore.GestoreOrdini import GestoreOrdini
+from Model.Conto.Conto import Conto
+from Model.Ordine.StatoOrdine import StatoOrdine
 
 class GestoreConti:
-    def __init__(self, dati: Dati, gestoreOrdini: GestoreOrdini):
-        self.dati = dati
-        self.gestoreOrdini = gestoreOrdini
+    @staticmethod
+    def calcolaTotale(ordine):
+        """Calcola il totale complessivo dell'ordine (Coperti + Consumazioni)"""
+        if not ordine:
+            return 0.0
+        totale = 2.0 * ordine.getNumeroCoperti() # 2.00 € per coperto
+        for p in ordine.getProdottiOrdinati():
+            totale += p.getPrezzo() * p.getQuantita()
+        return totale
 
-    def creaConto(self, ordine: Ordine, metodoPagamento: MetodoPagamento) -> Conto:
-        nuovoConto = Conto(ordine.getId(), metodoPagamento)
-        nuovoConto.calcolaTotale()
-        
-        # Conclude l'ordine e lo sposta automaticamente nello storico
-        self.gestoreOrdini.concludiOrdine(ordine)
-        return nuovoConto
+    @staticmethod
+    def emettiContoEChiudi(dati, ordine, metodo_pagamento):
+        """Crea il conto, imposta lo stato CONCLUSO e sposta l'ordine nello storico permanente"""
+        if not ordine or ordine not in dati.ordini:
+            return None
+
+        # 1. Crea il conto
+        conto = Conto(ordine, metodo_pagamento)
+        conto.calcolaTotale()
+
+        # 2. Imposta stato ordine a CONCLUSO
+        ordine.setStato(StatoOrdine.CONCLUSO)
+
+        # 3. Sposta dagli ordini attivi allo storico permanente
+        dati.ordini.remove(ordine)
+        dati.storicoOrdini.append(ordine)
+
+        # 4. Salvataggio persistente
+        dati.salvaTutto("dati.pkl")
+        return conto
