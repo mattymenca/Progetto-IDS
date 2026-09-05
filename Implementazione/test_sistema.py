@@ -1,7 +1,9 @@
-import unittest
 import sys
-
+# 1. DISATTIVA CREAZIONE __pycache__
 sys.dont_write_bytecode = True
+
+import unittest
+
 # --- Import delle classi del Modello ---
 from Model.Dati import Dati
 from Model.Magazzino.Prodotto import Prodotto
@@ -19,8 +21,12 @@ from Model.Utente.TipoContratto import TipoContratto
 from Model.Utente.StatoDipendente import StatoDipendente
 
 # ==============================================================================
-# ADATTATORI AUTOMATICI IN RAM (Non modificano nessun file nella cartella Model!)
+# BLOCCO ASSOLUTO SALVATAGGI SU DISCO DURANTE I TEST (Garantisce zero modifiche a dati.pkl)
 # ==============================================================================
+Dati.salvaTutto = lambda self, nomeFile=None: None
+Dati.caricaDati = lambda self, nomeFile=None: None
+
+# ADATTATORI AUTOMATICI IN RAM
 if not hasattr(Dati, 'genera_nuovo_id_ordine'):
     if hasattr(Dati, 'generaNuovoIdOrdine'):
         Dati.genera_nuovo_id_ordine = Dati.generaNuovoIdOrdine
@@ -50,7 +56,6 @@ if not hasattr(Prodotto, 'modificaQuantita'):
 # ==============================================================================
 
 class ProdottoTestCase(unittest.TestCase):
-    """Test unitari per la gestione dei prodotti e del magazzino"""
     def setUp(self):
         self.dati = Dati()
         self.prodotto = Prodotto(
@@ -78,7 +83,6 @@ class ProdottoTestCase(unittest.TestCase):
 
 
 class GestoreOrdiniTestCase(unittest.TestCase):
-    """Test unitari per la creazione e annullamento degli ordini"""
     def setUp(self):
         self.dati = Dati()
         self.prodotto = Prodotto("Cappuccino", quantita=20, prezzo=1.60, costo=0.40, fornitore="Centrale", avvisi=True, soglia=5)
@@ -107,7 +111,6 @@ class GestoreOrdiniTestCase(unittest.TestCase):
 
 
 class GestoreContiTestCase(unittest.TestCase):
-    """Test unitari per il calcolo del conto ed emissione scontrino"""
     def setUp(self):
         self.dati = Dati()
         po = ProdottoOrdinato("Caffè Espresso", 1.20, 2)
@@ -123,7 +126,6 @@ class GestoreContiTestCase(unittest.TestCase):
 
 
 class GestoreUtentiTestCase(unittest.TestCase):
-    """Test unitari per la gestione del personale"""
     def setUp(self):
         self.dati = Dati()
         self.gestore_utenti = GestoreUtenti(self.dati)
