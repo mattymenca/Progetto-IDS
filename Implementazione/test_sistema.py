@@ -26,31 +26,6 @@ from Model.Utente.StatoDipendente import StatoDipendente
 Dati.salvaTutto = lambda self, nomeFile=None: None
 Dati.caricaDati = lambda self, nomeFile=None: None
 
-# ADATTATORI AUTOMATICI IN RAM
-if not hasattr(Dati, 'generaNuovoIdOrdine'):
-    if hasattr(Dati, 'generaNuovoIdOrdine'):
-        Dati.generaNuovoIdOrdine = Dati.generaNuovoIdOrdine
-    else:
-        def _gen_id(self):
-            if not hasattr(self, 'prossimo_id_ordine'): self.prossimo_id_ordine = 1
-            curr = self.prossimo_id_ordine; self.prossimo_id_ordine += 1
-            return curr
-        Dati.generaNuovoIdOrdine = _gen_id; Dati.generaNuovoIdOrdine = _gen_id
-
-if not hasattr(Ordine, 'setStato'):
-    if hasattr(Ordine, 'setStatoOrdine'):
-        Ordine.setStato = Ordine.setStatoOrdine
-    else:
-        def _set_st(self, st): self.statoOrdine = st
-        Ordine.setStato = _set_st
-
-if not hasattr(Prodotto, 'modificaQuantita'):
-    if hasattr(Prodotto, 'setQuantita'):
-        Prodotto.modificaQuantita = Prodotto.setQuantita
-    else:
-        def _mod_q(self, q): self.quantita = q
-        Prodotto.modificaQuantita = _mod_q
-
 # ==============================================================================
 # CLASSI DI TEST UNITARI
 # ==============================================================================
@@ -78,7 +53,7 @@ class ProdottoTestCase(unittest.TestCase):
         GestoreMagazzino.rifornisciProdotto(self.dati, self.prodotto, qta_aggiuntiva=10)
         self.assertEqual(self.prodotto.getQuantita(), 20)
         
-        self.prodotto.modificaQuantita(3)
+        self.prodotto.setQuantita(3)
         self.assertTrue(self.prodotto.getQuantita() <= self.prodotto.getSoglia())
 
 
@@ -92,7 +67,7 @@ class GestoreOrdiniTestCase(unittest.TestCase):
         po = ProdottoOrdinato("Cappuccino", 1.60, 2)
         carrello = [(po, self.prodotto)]
         
-        ordine = GestoreOrdini.creaOrdine(self.dati, operatore=None, prodotti_carrello=carrello, coperti=2)
+        ordine = GestoreOrdini.creaOrdine(self.dati, persona=None, prodotti_carrello=carrello, coperti=2)
         
         self.assertEqual(self.prodotto.getQuantita(), 18)
         self.assertIn(ordine, self.dati.ordini)
@@ -100,7 +75,7 @@ class GestoreOrdiniTestCase(unittest.TestCase):
     def test_annullamento_ordine_e_ripristino_scorte(self):
         po = ProdottoOrdinato("Cappuccino", 1.60, 5)
         carrello = [(po, self.prodotto)]
-        ordine = GestoreOrdini.creaOrdine(self.dati, operatore=None, prodotti_carrello=carrello, coperti=2)
+        ordine = GestoreOrdini.creaOrdine(self.dati, persona=None, prodotti_carrello=carrello, coperti=2)
         
         self.assertEqual(self.prodotto.getQuantita(), 15)
 
