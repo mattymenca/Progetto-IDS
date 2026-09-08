@@ -67,5 +67,5 @@ class ContiController(QMainWindow, Ui_ContiWindow):
             QMessageBox.critical(self, "Errore Chiusura Conto", f"Si è verificato un errore durante l'incasso: {e}")
 
     def torna_indietro(self):
-        from Controller.Dipendenti import DipendentiController
+        from Controller.DipendentiController import DipendentiController
         self.primary_controller.mostra_finestra(DipendentiController, start_maximized=self.isMaximized())

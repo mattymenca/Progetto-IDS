@@ -141,5 +141,5 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
             QMessageBox.warning(self, "Attenzione", "Nessun ordine selezionato.")
 
     def torna_indietro(self):
-        from Controller.Dipendenti import DipendentiController
+        from Controller.DipendentiController import DipendentiController
         self.primary_controller.mostra_finestra(DipendentiController, start_maximized=self.isMaximized())

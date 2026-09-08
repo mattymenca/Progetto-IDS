@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow
 from View.inizio import Ui_MainWindow
-from Controller.Dipendenti import DipendentiController
+from Controller.DipendentiController import DipendentiController
 from Controller.LoginController import LoginController
 
 class InizioController(QMainWindow, Ui_MainWindow):

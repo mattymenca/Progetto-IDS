@@ -114,5 +114,5 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
         self.input_costo.clear(); self.input_fornitore.clear()
 
     def torna_indietro(self):
-        from Controller.Dipendenti import DipendentiController
+        from Controller.DipendentiController import DipendentiController
         self.primary_controller.mostra_finestra(DipendentiController, start_maximized=self.isMaximized())
