@@ -16,14 +16,11 @@ class Dati:
         self.manager = None
         self.prossimo_id_ordine = 1 # CONTATORE SEQUENZIALE
 
-    def genera_nuovo_id_ordine(self):
+    def generaNuovoIdOrdine(self):
         """Genera un ID sequenziale incrementale che non si ripete mai"""
         id_attuale = self.prossimo_id_ordine
         self.prossimo_id_ordine += 1
         return id_attuale
-
-    # Alias per compatibilità camelCase
-    generaNuovoIdOrdine = genera_nuovo_id_ordine
 
     def salvaTutto(self, nomeFile=None):
         """Usa SEMPRE il percorso fisso assoluto, ignorando stringhe relative come 'dati.pkl'"""

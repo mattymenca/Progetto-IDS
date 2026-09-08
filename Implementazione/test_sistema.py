@@ -27,15 +27,15 @@ Dati.salvaTutto = lambda self, nomeFile=None: None
 Dati.caricaDati = lambda self, nomeFile=None: None
 
 # ADATTATORI AUTOMATICI IN RAM
-if not hasattr(Dati, 'genera_nuovo_id_ordine'):
+if not hasattr(Dati, 'generaNuovoIdOrdine'):
     if hasattr(Dati, 'generaNuovoIdOrdine'):
-        Dati.genera_nuovo_id_ordine = Dati.generaNuovoIdOrdine
+        Dati.generaNuovoIdOrdine = Dati.generaNuovoIdOrdine
     else:
         def _gen_id(self):
             if not hasattr(self, 'prossimo_id_ordine'): self.prossimo_id_ordine = 1
             curr = self.prossimo_id_ordine; self.prossimo_id_ordine += 1
             return curr
-        Dati.genera_nuovo_id_ordine = _gen_id; Dati.generaNuovoIdOrdine = _gen_id
+        Dati.generaNuovoIdOrdine = _gen_id; Dati.generaNuovoIdOrdine = _gen_id
 
 if not hasattr(Ordine, 'setStato'):
     if hasattr(Ordine, 'setStatoOrdine'):
