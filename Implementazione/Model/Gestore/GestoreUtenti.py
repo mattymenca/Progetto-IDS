@@ -22,7 +22,7 @@ class GestoreUtenti:
         dipendente.modificaStatoDipendente(nuovo_stato)
         self.dati.salvaTutto("dati.pkl")
 
-    def salvaModificaCella(self, dipendente, column, valore_testo):
+    def modificaDatiDipendente(self, dipendente, column, valore_testo):
         """Modifica l'attributo specifico del dipendente o del suo contratto"""
         if column == 0: 
             dipendente.setNome(valore_testo)

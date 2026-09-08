@@ -73,7 +73,7 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
             valore_testo = self.tableWidget.item(row, column).text()
 
             # DELEGA AL GESTORE MAGAZZINO
-            GestoreMagazzino.salvaModificaCella(self.primary_controller.dati, prodotto, column, valore_testo)
+            GestoreMagazzino.modificaDatiProdotto(self.primary_controller.dati, prodotto, column, valore_testo)
             self.aggiorna_vista()
         except Exception:
             QMessageBox.warning(self, "Errore", "Valore inserito non valido!")

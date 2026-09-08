@@ -2,11 +2,7 @@ from Model.Magazzino.Prodotto import Prodotto
 from Model.Magazzino.StatoProdotto import StatoProdotto
 
 class GestoreMagazzino:
-
-    @staticmethod
-    def modificaQuantita(prodotto, nuova_quantita):
-        prodotto.setQuantita(nuova_quantita)
-
+    
     @staticmethod
     def aggiungiProdotto(dati, nome, qta, prezzo, costo, fornitore, soglia):
         nuovo = Prodotto(nome, qta, prezzo, costo, fornitore, True, soglia)
@@ -17,7 +13,7 @@ class GestoreMagazzino:
     @staticmethod
     def rifornisciProdotto(dati, prodotto, qta_aggiuntiva):
         nuova_qta = prodotto.getQuantita() + qta_aggiuntiva
-        GestoreMagazzino.modificaQuantita(prodotto, nuova_qta)
+        prodotto.setQuantita(nuova_qta)
         prodotto.setStatoProdotto(StatoProdotto.RIFORNITO)
         dati.salvaTutto("dati.pkl")
 
@@ -30,7 +26,7 @@ class GestoreMagazzino:
         return False
 
     @staticmethod
-    def salvaModificaCella(dati, prodotto, column, valore_testo):
+    def modificaDatiProdotto(dati, prodotto, column, valore_testo):
         if column == 0:
             prodotto.setNomeProdotto(valore_testo)
 

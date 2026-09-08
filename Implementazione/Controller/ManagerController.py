@@ -168,7 +168,7 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
             nuovo_valore = self.tableWidget.item(row, column).text()
 
             # DELEGA AL GESTORE UTENTI
-            self.primary_controller.gestore_utenti.salvaModificaCella(dipendente, column, nuovo_valore)
+            self.primary_controller.gestore_utenti.modificaDatiDipendente(dipendente, column, nuovo_valore)
             self.aggiorna_vista()
         except Exception:
             QMessageBox.warning(self, "Errore", "Valore inserito non valido!")
