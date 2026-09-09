@@ -1,13 +1,13 @@
 import pickle
 import os
 
-# Calcola il percorso fisso assoluto dentro la cartella del codice (Implementazione/dati.pkl)
+# Calcola dinamicamente la cartella del progetto sul PC corrente
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILE_DATI_PREDEFINITO = os.path.join(BASE_DIR, "dati.pkl")
 
 class Dati:
-    def __init__(self, file_path=FILE_DATI_PREDEFINITO):
-        self.file_path = file_path
+    def __init__(self, file_path=None):
+        self._custom_path = file_path
         self.ordini = []          # Ordini attivi in corso
         self.storico_ordini = []  # ARCHIVIO: Ordini completati e saldati
         self.contratti = []
@@ -16,6 +16,11 @@ class Dati:
         self.manager = None
         self.prossimo_id_ordine = 1 # CONTATORE SEQUENZIALE
 
+    @property
+    def file_path(self):
+        """Ritorna sempre il percorso assoluto dinamico del PC in uso"""
+        return self._custom_path or FILE_DATI_PREDEFINITO
+
     def generaNuovoIdOrdine(self):
         """Genera un ID sequenziale incrementale che non si ripete mai"""
         id_attuale = self.prossimo_id_ordine
@@ -23,29 +28,28 @@ class Dati:
         return id_attuale
 
     def salvaTutto(self, nomeFile=None):
-        """Usa SEMPRE il percorso fisso assoluto, ignorando stringhe relative come 'dati.pkl'"""
-        if nomeFile is None or nomeFile in ["dati.pkl", "dati.txt"]:
-            target_path = self.file_path
-        else:
-            target_path = nomeFile
+        target_path = nomeFile if (nomeFile and nomeFile not in ["dati.pkl", "dati.txt"]) else self.file_path
 
         try:
+            cartella = os.path.dirname(target_path)
+            if cartella:
+                os.makedirs(cartella, exist_ok=True)
+
             with open(target_path, "wb") as file:
                 pickle.dump(self, file)
         except Exception as e:
             print(f"Errore nel salvataggio ({target_path}): {e}")
 
     def caricaDati(self, nomeFile=None):
-        """Usa SEMPRE il percorso fisso assoluto, ignorando stringhe relative come 'dati.pkl'"""
-        if nomeFile is None or nomeFile in ["dati.pkl", "dati.txt"]:
-            target_path = self.file_path
-        else:
-            target_path = nomeFile
+        target_path = nomeFile if (nomeFile and nomeFile not in ["dati.pkl", "dati.txt"]) else self.file_path
 
         try:
             with open(target_path, "rb") as file:
                 obj = pickle.load(file)
                 self.__dict__.update(obj.__dict__)
+                
+                # Annulla l'eventuale percorso salvato da un altro PC
+                self._custom_path = None
                 
                 # Verifiche di sicurezza
                 if not hasattr(self, 'storico_ordini'):

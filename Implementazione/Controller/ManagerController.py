@@ -4,7 +4,6 @@ from Model.Utente.Dipendente import Dipendente
 from Model.Utente.StatoDipendente import StatoDipendente
 from Model.Utente.Contratto import Contratto
 from Model.Utente.TipoContratto import TipoContratto
-from Model.Gestore.GestoreUtenti import GestoreUtenti
 
 class DettagliPersonaDialog(QDialog):
     """Finestra Pop-up per mostrare lo storico ordini e contratti"""
@@ -151,7 +150,6 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
             else:
                 d_fine = self.date_fine.date().toString("yyyy-MM-dd")
 
-            # DELEGA AL GESTORE UTENTI
             self.primary_controller.gestore_utenti.assumiDipendente(
                 nome, cognome, eta, tipo_contratto, salario, d_inizio, d_fine
             )
@@ -167,7 +165,6 @@ class ManagerController(QMainWindow, Ui_ManagerWindow):
             dipendente = self.primary_controller.dati.dipendenti[row]
             nuovo_valore = self.tableWidget.item(row, column).text()
 
-            # DELEGA AL GESTORE UTENTI
             self.primary_controller.gestore_utenti.modificaDatiDipendente(dipendente, column, nuovo_valore)
             self.aggiorna_vista()
         except Exception:

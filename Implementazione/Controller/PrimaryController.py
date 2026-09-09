@@ -1,5 +1,7 @@
 from Model.Gestore.GestoreUtenti import GestoreUtenti
-from PyQt5.QtWidgets import QMainWindow
+from Model.Gestore.GestoreConti import GestoreConti
+from Model.Gestore.GestoreMagazzino import GestoreMagazzino
+from Model.Gestore.GestoreOrdini import GestoreOrdini
 
 class PrimaryController:
     """
@@ -10,7 +12,12 @@ class PrimaryController:
         self.dati = dati
         self.active_controllers = {}
         self.current_controller = None
+        
+        # Istanziamento unificato di tutti i gestori
         self.gestore_utenti = GestoreUtenti(dati)
+        self.gestore_conti = GestoreConti(dati)
+        self.gestore_magazzino = GestoreMagazzino(dati)
+        self.gestore_ordini = GestoreOrdini(dati)
 
     def mostra_finestra(self, ControllerClass, *args, **kwargs):
         start_maximized = kwargs.pop('start_maximized', False)
@@ -33,9 +40,6 @@ class PrimaryController:
             self.current_controller.showMaximized()
         else:
             self.current_controller.show()
-
-    # Alias di compatibilità
-    mostraFinestra = mostra_finestra
 
     def salva_dati(self):
         self.dati.salvaTutto()

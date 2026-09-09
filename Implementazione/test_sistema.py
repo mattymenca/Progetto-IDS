@@ -1,5 +1,5 @@
 import sys
-# 1. DISATTIVA CREAZIONE __pycache__
+# Disattiva creazione __pycache__
 sys.dont_write_bytecode = True
 
 import unittest
@@ -10,7 +10,6 @@ from Model.Magazzino.Prodotto import Prodotto
 from Model.Ordine.ordine import Ordine
 from Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
 from Model.Conto.MetodoPagamento import MetodoPagamento
-from Model.Ordine.StatoOrdine import StatoOrdine
 
 # --- Import dei Gestori ---
 from Model.Gestore.GestoreMagazzino import GestoreMagazzino
@@ -18,10 +17,9 @@ from Model.Gestore.GestoreOrdini import GestoreOrdini
 from Model.Gestore.GestoreConti import GestoreConti
 from Model.Gestore.GestoreUtenti import GestoreUtenti
 from Model.Utente.TipoContratto import TipoContratto
-from Model.Utente.StatoDipendente import StatoDipendente
 
 # ==============================================================================
-# BLOCCO ASSOLUTO SALVATAGGI SU DISCO DURANTE I TEST (Garantisce zero modifiche a dati.pkl)
+# BLOCCO ASSOLUTO SALVATAGGI SU DISCO DURANTE I TEST
 # ==============================================================================
 Dati.salvaTutto = lambda self, nomeFile=None: None
 Dati.caricaDati = lambda self, nomeFile=None: None
@@ -33,6 +31,7 @@ Dati.caricaDati = lambda self, nomeFile=None: None
 class ProdottoTestCase(unittest.TestCase):
     def setUp(self):
         self.dati = Dati()
+        self.gestore_magazzino = GestoreMagazzino(self.dati)
         self.prodotto = Prodotto(
             nome="Caffè Espresso", 
             quantita=10, 
@@ -50,7 +49,8 @@ class ProdottoTestCase(unittest.TestCase):
         self.assertEqual(self.prodotto.getQuantita(), 10)
 
     def test_rifornimento_e_soglia(self):
-        GestoreMagazzino.rifornisciProdotto(self.dati, self.prodotto, qta_aggiuntiva=10)
+        # DELEGA AD ISTANZA GESTORE MAGAZZINO
+        self.gestore_magazzino.rifornisciProdotto(self.prodotto, qta_aggiuntiva=10)
         self.assertEqual(self.prodotto.getQuantita(), 20)
         
         self.prodotto.setQuantita(3)
@@ -60,6 +60,7 @@ class ProdottoTestCase(unittest.TestCase):
 class GestoreOrdiniTestCase(unittest.TestCase):
     def setUp(self):
         self.dati = Dati()
+        self.gestore_ordini = GestoreOrdini(self.dati)
         self.prodotto = Prodotto("Cappuccino", quantita=20, prezzo=1.60, costo=0.40, fornitore="Centrale", avvisi=True, soglia=5)
         self.dati.prodotti.append(self.prodotto)
 
@@ -67,7 +68,8 @@ class GestoreOrdiniTestCase(unittest.TestCase):
         po = ProdottoOrdinato("Cappuccino", 1.60, 2)
         carrello = [(po, self.prodotto)]
         
-        ordine = GestoreOrdini.creaOrdine(self.dati, persona=None, prodotti_carrello=carrello, coperti=2)
+        # DELEGA AD ISTANZA GESTORE ORDINI
+        ordine = self.gestore_ordini.creaOrdine(persona=None, prodotti_carrello=carrello, coperti=2)
         
         self.assertEqual(self.prodotto.getQuantita(), 18)
         self.assertIn(ordine, self.dati.ordini)
@@ -75,11 +77,12 @@ class GestoreOrdiniTestCase(unittest.TestCase):
     def test_annullamento_ordine_e_ripristino_scorte(self):
         po = ProdottoOrdinato("Cappuccino", 1.60, 5)
         carrello = [(po, self.prodotto)]
-        ordine = GestoreOrdini.creaOrdine(self.dati, persona=None, prodotti_carrello=carrello, coperti=2)
+        ordine = self.gestore_ordini.creaOrdine(persona=None, prodotti_carrello=carrello, coperti=2)
         
         self.assertEqual(self.prodotto.getQuantita(), 15)
 
-        esito = GestoreOrdini.annullaOrdine(self.dati, ordine)
+        # DELEGA AD ISTANZA GESTORE ORDINI
+        esito = self.gestore_ordini.annullaOrdine(ordine)
         self.assertTrue(esito)
         self.assertEqual(self.prodotto.getQuantita(), 20)
         self.assertNotIn(ordine, self.dati.ordini)
@@ -88,15 +91,17 @@ class GestoreOrdiniTestCase(unittest.TestCase):
 class GestoreContiTestCase(unittest.TestCase):
     def setUp(self):
         self.dati = Dati()
+        self.gestore_conti = GestoreConti(self.dati)
         po = ProdottoOrdinato("Caffè Espresso", 1.20, 2)
         self.ordine = Ordine(id=1, prodottiOrdinati=[po], numeroCoperti=2)
         self.dati.ordini.append(self.ordine)
 
     def test_calcolo_totale_e_archiviazione(self):
-        totale = GestoreConti.calcolaTotale(self.ordine)
+        # DELEGA AD ISTANZA GESTORE CONTI
+        totale = self.gestore_conti.calcolaTotale(self.ordine)
         self.assertAlmostEqual(totale, 6.40)
 
-        conto = GestoreConti.emettiContoEChiudi(self.dati, self.ordine, MetodoPagamento.CONTANTI)
+        conto = self.gestore_conti.emettiContoEChiudi(self.ordine, MetodoPagamento.CONTANTI)
         self.assertNotIn(self.ordine, self.dati.ordini)
 
 

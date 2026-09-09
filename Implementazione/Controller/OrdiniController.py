@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from View.ordini import Ui_OrdiniWindow
 from Model.Ordine.ProdottoOrdinato import ProdottoOrdinato
-from Model.Gestore.GestoreOrdini import GestoreOrdini
 
 class OrdiniController(QMainWindow, Ui_OrdiniWindow):
     def __init__(self, primary_controller):
@@ -86,24 +85,21 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
             operatore = self.combo_operatore.currentData()
             coperti = self.spin_coperti.value()
 
-            # DELEGA SICURA AL GESTORE ORDINI
             if self.ordine_in_modifica:
-                GestoreOrdini.modificaOrdine(
-                    dati=self.primary_controller.dati,
+                self.primary_controller.gestore_ordini.modificaOrdine(
                     ordine_vecchio=self.ordine_in_modifica,
-                    operatore=operatore,
+                    persona=operatore,
                     nuovi_prodotti_carrello=self.carrello,
                     nuovi_coperti=coperti
                 )
             else:
-                GestoreOrdini.creaOrdine(
-                    dati=self.primary_controller.dati,
-                    operatore=operatore,
+                self.primary_controller.gestore_ordini.creaOrdine(
+                    persona=operatore,
                     prodotti_carrello=self.carrello,
                     coperti=coperti
                 )
 
-            QMessageBox.information(self, "Successo", f"Ordine salvato con successo!")
+            QMessageBox.information(self, "Successo", "Ordine salvato con successo!")
             self.torna_indietro()
         except Exception as e:
             QMessageBox.critical(self, "Errore Salva Ordine", f"Si è verificato un errore: {e}")
@@ -132,7 +128,7 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         ordine_selezionato = self.combo_ordini_trovati.currentData()
         if ordine_selezionato:
             try:
-                GestoreOrdini.annullaOrdine(self.primary_controller.dati, ordine_selezionato)
+                self.primary_controller.gestore_ordini.annullaOrdine(ordine_selezionato)
                 QMessageBox.information(self, "Annullato", f"Ordine #{ordine_selezionato.getId()} annullato e scorte ripristinate!")
                 self.aggiorna_vista()
             except Exception as e:

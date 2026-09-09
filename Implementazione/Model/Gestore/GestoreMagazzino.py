@@ -2,36 +2,34 @@ from Model.Magazzino.Prodotto import Prodotto
 from Model.Magazzino.StatoProdotto import StatoProdotto
 
 class GestoreMagazzino:
+    def __init__(self, dati):
+        self.dati = dati
     
-    @staticmethod
-    def aggiungiProdotto(dati, nome, qta, prezzo, costo, fornitore, soglia):
+    def aggiungiProdotto(self, nome, qta, prezzo, costo, fornitore, soglia):
         nuovo = Prodotto(nome, qta, prezzo, costo, fornitore, True, soglia)
-        dati.prodotti.append(nuovo)
-        dati.salvaTutto("dati.pkl")
+        self.dati.prodotti.append(nuovo)
+        self.dati.salvaTutto("dati.pkl")
         return nuovo
 
-    @staticmethod
-    def rifornisciProdotto(dati, prodotto, qta_aggiuntiva):
+    def rifornisciProdotto(self, prodotto, qta_aggiuntiva):
         nuova_qta = prodotto.getQuantita() + qta_aggiuntiva
         prodotto.setQuantita(nuova_qta)
         prodotto.setStatoProdotto(StatoProdotto.RIFORNITO)
-        dati.salvaTutto("dati.pkl")
+        self.dati.salvaTutto("dati.pkl")
 
-    @staticmethod
-    def eliminaProdotto(dati, indice_prodotto):
-        if 0 <= indice_prodotto < len(dati.prodotti):
-            dati.prodotti.pop(indice_prodotto)
-            dati.salvaTutto("dati.pkl")
+    def eliminaProdotto(self, indice_prodotto):
+        if 0 <= indice_prodotto < len(self.dati.prodotti):
+            self.dati.prodotti.pop(indice_prodotto)
+            self.dati.salvaTutto("dati.pkl")
             return True
         return False
 
-    @staticmethod
-    def modificaDatiProdotto(dati, prodotto, column, valore_testo):
+    def modificaDatiProdotto(self, prodotto, column, valore_testo):
         if column == 0:
             prodotto.setNomeProdotto(valore_testo)
 
         elif column == 1:
-            GestoreMagazzino.modificaQuantita(
+            self.modificaQuantita(
                 prodotto,
                 int(valore_testo)
             )
@@ -48,4 +46,4 @@ class GestoreMagazzino:
         elif column == 5:
             prodotto.setFornitore(valore_testo)
 
-        dati.salvaTutto("dati.pkl")
+        self.dati.salvaTutto("dati.pkl")

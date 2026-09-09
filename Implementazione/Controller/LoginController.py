@@ -8,10 +8,13 @@ class LoginController(QMainWindow, Ui_LoginWindow):
         self.primary_controller = primary_controller 
 
         self.pushButton_login.clicked.connect(self.tenta_login)
+        # Consente l'invio delle credenziali premendo Invio nei campi di testo
+        self.lineEdit_username.returnPressed.connect(self.tenta_login)
+        self.lineEdit_password.returnPressed.connect(self.tenta_login)
 
     def tenta_login(self):
-        nome = self.lineEdit_username.text()
-        password = self.lineEdit_password.text()
+        nome = self.lineEdit_username.text().strip()
+        password = self.lineEdit_password.text().strip()
         
         login_riuscito = self.primary_controller.gestore_utenti.validaCredenziali(nome, password)
         

@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from View.conti import Ui_ContiWindow
 from Model.Conto.MetodoPagamento import MetodoPagamento
-from Model.Gestore.GestoreConti import GestoreConti
 
 class ContiController(QMainWindow, Ui_ContiWindow):
     def __init__(self, primary_controller):
@@ -33,8 +32,7 @@ class ContiController(QMainWindow, Ui_ContiWindow):
             return
 
         try:
-            # DELEGA AL GESTORE CONTI
-            totale = GestoreConti.calcolaTotale(ordine)
+            totale = self.primary_controller.gestore_conti.calcolaTotale(ordine)
             self.lbl_totale.setText(f"Totale da Pagare: {totale:.2f} €")
         except Exception as e:
             QMessageBox.critical(self, "Errore Calcola Totale", f"Si è verificato un errore: {e}")
@@ -48,11 +46,10 @@ class ContiController(QMainWindow, Ui_ContiWindow):
             return
 
         try:
-            # DELEGA SICURA AL GESTORE CONTI
-            conto = GestoreConti.emettiContoEChiudi(self.primary_controller.dati, ordine, metodo)
+            conto = self.primary_controller.gestore_conti.emettiContoEChiudi(ordine, metodo)
 
             if conto:
-                totale_incassato = conto.getTotale() if hasattr(conto, 'getTotale') else GestoreConti.calcolaTotale(ordine)
+                totale_incassato = conto.getTotale() if hasattr(conto, 'getTotale') else self.primary_controller.gestore_conti.calcolaTotale(ordine)
                 QMessageBox.information(
                     self, 
                     "Pagamento Effettuato", 

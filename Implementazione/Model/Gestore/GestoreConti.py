@@ -3,9 +3,10 @@ from Model.Ordine.StatoOrdine import StatoOrdine
 
 
 class GestoreConti:
+    def __init__(self, dati):
+        self.dati = dati
 
-    @staticmethod
-    def calcolaTotale(ordine):
+    def calcolaTotale(self, ordine):
         if not ordine:
             return 0.0
 
@@ -16,8 +17,7 @@ class GestoreConti:
 
         return totale
 
-    @staticmethod
-    def emettiContoEChiudi(dati, ordine, metodo_pagamento):
+    def emettiContoEChiudi(self, ordine, metodo_pagamento):
         if not ordine:
             return None
 
@@ -26,12 +26,12 @@ class GestoreConti:
 
         ordine.setStatoOrdine(StatoOrdine.CONCLUSO)
 
-        if ordine in dati.ordini:
-            dati.ordini.remove(ordine)
+        if ordine in self.dati.ordini:
+            self.dati.ordini.remove(ordine)
 
-        if ordine not in dati.storico_ordini:
-            dati.storico_ordini.append(ordine)
+        if ordine not in self.dati.storico_ordini:
+            self.dati.storico_ordini.append(ordine)
 
-        dati.salvaTutto("dati.pkl")
+        self.dati.salvaTutto("dati.pkl")
 
         return conto

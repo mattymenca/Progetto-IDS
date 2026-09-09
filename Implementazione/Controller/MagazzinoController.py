@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QMessageBox, QInputDialog
 from PyQt5.QtGui import QColor
 from View.magazzino import Ui_MagazzinoWindow
-from Model.Gestore.GestoreMagazzino import GestoreMagazzino
 
 class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
     def __init__(self, primary_controller):
@@ -32,7 +31,7 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
             item_costo = QTableWidgetItem(f"{p.getCosto():.2f}")
             item_fornitore = QTableWidgetItem(str(p.getFornitore()))
 
-            # Evidenzia in ROSSO se sotto o pari alla soglia minima
+            # Evidenzia in rosso se sotto o pari alla soglia minima
             if p.getQuantita() <= p.getSoglia():
                 color_rosso = QColor(231, 76, 60, 180)
                 item_qta.setBackground(color_rosso)
@@ -58,8 +57,7 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
                     value=10, min=1, max=1000
                 )
                 if ok:
-                    # DELEGA SICURA AL GESTORE MAGAZZINO
-                    GestoreMagazzino.rifornisciProdotto(self.primary_controller.dati, prodotto, qta_aggiuntiva)
+                    self.primary_controller.gestore_magazzino.rifornisciProdotto(prodotto, qta_aggiuntiva)
                     self.aggiorna_vista()
                     QMessageBox.information(self, "Rifornito", f"Aggiunti {qta_aggiuntiva} pezzi a {prodotto.getNomeProdotto()}!")
             except Exception as e:
@@ -72,8 +70,7 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
             prodotto = self.primary_controller.dati.prodotti[row]
             valore_testo = self.tableWidget.item(row, column).text()
 
-            # DELEGA AL GESTORE MAGAZZINO
-            GestoreMagazzino.modificaDatiProdotto(self.primary_controller.dati, prodotto, column, valore_testo)
+            self.primary_controller.gestore_magazzino.modificaDatiProdotto(prodotto, column, valore_testo)
             self.aggiorna_vista()
         except Exception:
             QMessageBox.warning(self, "Errore", "Valore inserito non valido!")
@@ -88,10 +85,10 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
             costo = float(self.input_costo.text())
             fornitore = self.input_fornitore.text()
 
-            if not nome: raise ValueError()
+            if not nome:
+                raise ValueError()
 
-            # DELEGA AL GESTORE MAGAZZINO
-            GestoreMagazzino.aggiungiProdotto(self.primary_controller.dati, nome, qta, prezzo, costo, fornitore, soglia)
+            self.primary_controller.gestore_magazzino.aggiungiProdotto(nome, qta, prezzo, costo, fornitore, soglia)
             self.aggiorna_vista()
             self.pulisci_input()
             QMessageBox.information(self, "Successo", "Prodotto aggiunto al magazzino!")
@@ -101,17 +98,19 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
     def elimina_prodotto(self):
         row = self.tableWidget.currentRow()
         if row >= 0:
-            # DELEGA AL GESTORE MAGAZZINO
-            GestoreMagazzino.eliminaProdotto(self.primary_controller.dati, row)
+            self.primary_controller.gestore_magazzino.eliminaProdotto(row)
             self.aggiorna_vista()
             QMessageBox.information(self, "Successo", "Prodotto rimosso!")
         else:
             QMessageBox.warning(self, "Attenzione", "Seleziona una riga da eliminare.")
 
     def pulisci_input(self):
-        self.input_nome.clear(); self.input_qta.clear()
-        self.input_soglia.clear(); self.input_prezzo.clear()
-        self.input_costo.clear(); self.input_fornitore.clear()
+        self.input_nome.clear()
+        self.input_qta.clear()
+        self.input_soglia.clear()
+        self.input_prezzo.clear()
+        self.input_costo.clear()
+        self.input_fornitore.clear()
 
     def torna_indietro(self):
         from Controller.DipendentiController import DipendentiController

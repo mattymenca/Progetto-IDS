@@ -2,10 +2,11 @@ from Model.Ordine.ordine import Ordine
 from Model.Ordine.StatoOrdine import StatoOrdine
 
 class GestoreOrdini:
+    def __init__(self, dati):
+        self.dati = dati
 
-    @staticmethod
-    def creaOrdine(dati, persona, prodotti_carrello, coperti):
-        id_ordine = dati.generaNuovoIdOrdine()
+    def creaOrdine(self, persona, prodotti_carrello, coperti):
+        id_ordine = self.dati.generaNuovoIdOrdine()
         lista_po = []
 
         for po, prod_originale in prodotti_carrello:
@@ -17,34 +18,32 @@ class GestoreOrdini:
         nuovo_ordine = Ordine(id_ordine, lista_po, coperti)
         nuovo_ordine.setStatoOrdine(StatoOrdine.IN_CORSO)
 
-        dati.ordini.append(nuovo_ordine)
+        self.dati.ordini.append(nuovo_ordine)
 
         if persona:
             persona.aggiungiOrdine(nuovo_ordine)
 
-        dati.salvaTutto("dati.pkl")
+        self.dati.salvaTutto("dati.pkl")
 
         return nuovo_ordine
 
-    @staticmethod
-    def annullaOrdine(dati, ordine):
-        if ordine in dati.ordini:
+    def annullaOrdine(self, ordine):
+        if ordine in self.dati.ordini:
 
             for po in ordine.getProdottiOrdinati():
-                for p in dati.prodotti:
+                for p in self.dati.prodotti:
 
                     if p.getNomeProdotto() == po.getNome():
                         nuova_qta = p.getQuantita() + po.getQuantita()
                         p.setQuantita(nuova_qta)
 
-            dati.ordini.remove(ordine)
-            dati.salvaTutto("dati.pkl")
+            self.dati.ordini.remove(ordine)
+            self.dati.salvaTutto("dati.pkl")
 
             return True
 
         return False
 
-    @staticmethod
-    def modificaOrdine(dati, ordine_vecchio, persona, nuovi_prodotti_carrello, nuovi_coperti):
-        GestoreOrdini.annullaOrdine(dati, ordine_vecchio)
-        return GestoreOrdini.creaOrdine(dati, persona, nuovi_prodotti_carrello, nuovi_coperti)
+    def modificaOrdine(self, ordine_vecchio, persona, nuovi_prodotti_carrello, nuovi_coperti):
+        self.annullaOrdine(ordine_vecchio)
+        return self.creaOrdine(persona, nuovi_prodotti_carrello, nuovi_coperti)
