@@ -66,10 +66,30 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
         prodotto_obj = self.combo_prodotti.currentData()
         qta = self.spin_qta.value()
 
-        if not prodotto_obj: return
+        if not prodotto_obj or qta <= 0:
+            return
 
-        if qta > prodotto_obj.getQuantita():
-            QMessageBox.warning(self, "Attenzione", f"Quantità insufficiente! Disponibili solo {prodotto_obj.getQuantita()} pezzi.")
+        qta_nel_carrello = sum(po.getQuantita() for po, p in self.carrello if p.getNomeProdotto() == prodotto_obj.getNomeProdotto())
+
+        qta_ordine_originale = 0
+        if self.ordine_in_modifica:
+            for po in self.ordine_in_modifica.getProdottiOrdinati():
+                if po.getNome() == prodotto_obj.getNomeProdotto():
+                    qta_ordine_originale += po.getQuantita()
+
+        disponibilita_reale = prodotto_obj.getQuantita() + qta_ordine_originale
+        qta_totale_richiesta = qta_nel_carrello + qta
+
+        if qta_totale_richiesta > disponibilita_reale:
+            rimasti = disponibilita_reale - qta_nel_carrello
+            QMessageBox.warning(
+                self, 
+                "Attenzione", 
+                f"Quantità insufficiente!\n"
+                f"Disponibili totali: {disponibilita_reale}\n"
+                f"Già nel carrello: {qta_nel_carrello}\n"
+                f"Puoi aggiungerne al massimo altri {max(0, rimasti)}."
+            )
             return
 
         po = ProdottoOrdinato(prodotto_obj.getNomeProdotto(), prodotto_obj.getPrezzo(), qta)

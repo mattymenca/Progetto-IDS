@@ -7,6 +7,15 @@ class GestoreOrdini(IGestioneOrdini):
         self.dati = dati
 
     def creaOrdine(self, persona, prodotti_carrello, coperti):
+        # 1. Controllo preventivo di sicurezza sulle scorte disponibili
+        for po, prod_originale in prodotti_carrello:
+            if po.getQuantita() > prod_originale.getQuantita():
+                raise ValueError(
+                    f"Quantità insufficiente per '{prod_originale.getNomeProdotto()}'. "
+                    f"Disponibili: {prod_originale.getQuantita()}."
+                )
+
+        # 2. Creazione dell'ordine e aggiornamento quantità
         id_ordine = self.dati.generaNuovoIdOrdine()
         lista_po = []
 
@@ -14,7 +23,7 @@ class GestoreOrdini(IGestioneOrdini):
             lista_po.append(po)
 
             nuova_qta = prod_originale.getQuantita() - po.getQuantita()
-            prod_originale.setQuantita(nuova_qta)
+            prod_originale.setQuantita(nuova_qta)  # Aggiorna anche statoProdotto tramite la classe Prodotto
 
         nuovo_ordine = Ordine(id_ordine, lista_po, coperti)
         nuovo_ordine.setStatoOrdine(StatoOrdine.IN_CORSO)
@@ -36,7 +45,7 @@ class GestoreOrdini(IGestioneOrdini):
 
                     if p.getNomeProdotto() == po.getNome():
                         nuova_qta = p.getQuantita() + po.getQuantita()
-                        p.setQuantita(nuova_qta)
+                        p.setQuantita(nuova_qta)  # Ripristina quantità e statoProdotto in automatico
 
             self.dati.ordini.remove(ordine)
             self.dati.salvaTutto("dati.pkl")
