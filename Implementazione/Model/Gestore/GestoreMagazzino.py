@@ -5,6 +5,9 @@ from Model.Magazzino.StatoProdotto import StatoProdotto
 class GestoreMagazzino(IGestioneMagazzino):
     def __init__(self, dati):
         self.dati = dati
+        
+        for p in self.dati.prodotti:
+            p.aggiornaStatoProdotto()
 
     def aggiungiProdotto(self, nome, qta, prezzo, costo, fornitore, soglia):
         nuovo = Prodotto(nome, qta, prezzo, costo, fornitore, True, soglia)

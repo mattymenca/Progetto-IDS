@@ -12,6 +12,16 @@ class Prodotto:
         self.soglia = soglia
         self.statoProdotto = StatoProdotto.RIFORNITO
         
+        self.aggiornaStatoProdotto()
+
+    def aggiornaStatoProdotto(self):
+        if self.quantita == 0:
+            self.statoProdotto = StatoProdotto.ESAURITO
+        elif self.quantita <= self.soglia:
+            self.statoProdotto = StatoProdotto.QUASI_FINITO
+        else:
+            self.statoProdotto = StatoProdotto.RIFORNITO
+        
     def getNomeProdotto(self):
         return self.nome
 
@@ -47,17 +57,17 @@ class Prodotto:
 
     def setQuantita(self, quantita: int):
         self.quantita = quantita
+        self.aggiornaStatoProdotto()
 
     def setFornitore(self, fornitore: str):
         self.fornitore = fornitore
 
     def setSoglia(self, soglia: int):
         self.soglia = soglia
+        self.aggiornaStatoProdotto()
 
     def setAvvisi(self, avvisi: bool):
         self.avvisi = avvisi
 
     def setStatoProdotto(self, statoProdotto: StatoProdotto):
         self.statoProdotto = statoProdotto
-    
-

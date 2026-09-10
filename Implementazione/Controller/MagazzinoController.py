@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QMessageBox, QInputDialog
 from PyQt5.QtGui import QColor
 from View.magazzino import Ui_MagazzinoWindow
+from Model.Magazzino.StatoProdotto import StatoProdotto
 
 class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
     def __init__(self, primary_controller):
@@ -31,9 +32,14 @@ class MagazzinoController(QMainWindow, Ui_MagazzinoWindow):
             item_costo = QTableWidgetItem(f"{p.getCosto():.2f}")
             item_fornitore = QTableWidgetItem(str(p.getFornitore()))
 
-            # Evidenzia in rosso se sotto o pari alla soglia minima
-            if p.getQuantita() <= p.getSoglia():
-                color_rosso = QColor(231, 76, 60, 180)
+            # Gestione dei colori basata sullo Stato ufficiale dell'entità
+            stato = p.getStatoProdotto()
+            if stato == StatoProdotto.QUASI_FINITO:
+                color_warning = QColor(230, 126, 34, 180)  # Arancione di pre-allarme
+                item_qta.setBackground(color_warning)
+                item_nome.setBackground(color_warning)
+            elif stato == StatoProdotto.ESAURITO:
+                color_rosso = QColor(231, 76, 60, 180)     # Rosso di blocco/scorta zero
                 item_qta.setBackground(color_rosso)
                 item_nome.setBackground(color_rosso)
 
