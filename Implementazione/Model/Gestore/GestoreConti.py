@@ -1,12 +1,12 @@
+from Model.Gestore.IGestioneConti import IGestioneConti
 from Model.Conto.Conto import Conto
 from Model.Ordine.StatoOrdine import StatoOrdine
 
-
-class GestoreConti:
+class GestoreConti(IGestioneConti):
     def __init__(self, dati):
         self.dati = dati
 
-    def calcolaTotale(self, ordine):
+    def calcolaTotale(self, ordine) -> float:
         if not ordine:
             return 0.0
 

@@ -1,3 +1,8 @@
+from Model.Gestore.IGestioneUtenti import IGestioneUtenti
+from Model.Gestore.IGestioneConti import IGestioneConti
+from Model.Gestore.IGestioneMagazzino import IGestioneMagazzino
+from Model.Gestore.IGestioneOrdini import IGestioneOrdini
+
 from Model.Gestore.GestoreUtenti import GestoreUtenti
 from Model.Gestore.GestoreConti import GestoreConti
 from Model.Gestore.GestoreMagazzino import GestoreMagazzino
@@ -14,10 +19,10 @@ class PrimaryController:
         self.current_controller = None
         
         # Istanziamento unificato di tutti i gestori
-        self.gestore_utenti = GestoreUtenti(dati)
-        self.gestore_conti = GestoreConti(dati)
-        self.gestore_magazzino = GestoreMagazzino(dati)
-        self.gestore_ordini = GestoreOrdini(dati)
+        self.gestore_utenti: IGestioneUtenti = GestoreUtenti(dati)
+        self.gestore_conti: IGestioneConti = GestoreConti(dati)
+        self.gestore_magazzino: IGestioneMagazzino = GestoreMagazzino(dati)
+        self.gestore_ordini: IGestioneOrdini = GestoreOrdini(dati)
 
     def mostra_finestra(self, ControllerClass, *args, **kwargs):
         start_maximized = kwargs.pop('start_maximized', False)

@@ -1,7 +1,8 @@
+from Model.Gestore.IGestioneOrdini import IGestioneOrdini
 from Model.Ordine.ordine import Ordine
 from Model.Ordine.StatoOrdine import StatoOrdine
 
-class GestoreOrdini:
+class GestoreOrdini(IGestioneOrdini):
     def __init__(self, dati):
         self.dati = dati
 

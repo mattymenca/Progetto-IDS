@@ -1,8 +1,9 @@
+from Model.Gestore.IGestioneUtenti import IGestioneUtenti
 from Model.Utente.Dipendente import Dipendente
 from Model.Utente.Contratto import Contratto
 from Model.Utente.StatoDipendente import StatoDipendente
 
-class GestoreUtenti:
+class GestoreUtenti(IGestioneUtenti):
     def __init__(self, dati):
         self.dati = dati
 
@@ -23,7 +24,6 @@ class GestoreUtenti:
         self.dati.salvaTutto("dati.pkl")
 
     def modificaDatiDipendente(self, dipendente, column, valore_testo):
-        """Modifica l'attributo specifico del dipendente o del suo contratto"""
         if column == 0: 
             dipendente.setNome(valore_testo)
         elif column == 1: 

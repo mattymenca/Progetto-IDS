@@ -1,10 +1,11 @@
+from Model.Gestore.IGestioneMagazzino import IGestioneMagazzino
 from Model.Magazzino.Prodotto import Prodotto
 from Model.Magazzino.StatoProdotto import StatoProdotto
 
-class GestoreMagazzino:
+class GestoreMagazzino(IGestioneMagazzino):
     def __init__(self, dati):
         self.dati = dati
-    
+
     def aggiungiProdotto(self, nome, qta, prezzo, costo, fornitore, soglia):
         nuovo = Prodotto(nome, qta, prezzo, costo, fornitore, True, soglia)
         self.dati.prodotti.append(nuovo)
