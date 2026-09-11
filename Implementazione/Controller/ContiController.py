@@ -45,21 +45,33 @@ class ContiController(QMainWindow, Ui_ContiWindow):
             QMessageBox.warning(self, "Attenzione", "Nessun ordine selezionato.")
             return
 
+        totale = self.primary_controller.gestore_conti.calcolaTotale(ordine)
+
+        conferma = QMessageBox.question(
+            self,
+            "Conferma Incasso",
+            f"Confermi la ricezione di {totale:.2f}€ tramite {metodo.value.upper()}?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.Yes
+        )
+
+        if conferma == QMessageBox.No:
+            QMessageBox.information(self, "Operazione Annullata", "Incasso annullato. L'ordine rimane attivo.")
+            return
+
         try:
             conto = self.primary_controller.gestore_conti.emettiContoEChiudi(ordine, metodo)
 
             if conto:
-                totale_incassato = conto.getTotale() if hasattr(conto, 'getTotale') else self.primary_controller.gestore_conti.calcolaTotale(ordine)
                 QMessageBox.information(
                     self, 
                     "Pagamento Effettuato", 
-                    f"Conto di {totale_incassato:.2f}€ incassato con successo!\nScontrino emesso."
+                    f"Conto di {totale:.2f}€ incassato con successo!\nScontrino emesso."
                 )
+                self.torna_indietro()
             else:
                 QMessageBox.warning(self, "Attenzione", "Impossibile completare il conto per questo ordine.")
 
-            # RITORNA AL MENU OPERATIVO
-            self.torna_indietro()
         except Exception as e:
             QMessageBox.critical(self, "Errore Chiusura Conto", f"Si è verificato un errore durante l'incasso: {e}")
 
