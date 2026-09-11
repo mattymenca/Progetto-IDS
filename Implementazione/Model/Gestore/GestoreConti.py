@@ -21,8 +21,8 @@ class GestoreConti(IGestioneConti):
         if not ordine:
             return None
 
-        conto = Conto(ordine, metodo_pagamento)
-        conto.calcolaTotale()
+        totale = self.calcolaTotale(ordine)
+        conto = Conto(ordine, metodo_pagamento, totale)
 
         ordine.setStatoOrdine(StatoOrdine.CONCLUSO)
 
