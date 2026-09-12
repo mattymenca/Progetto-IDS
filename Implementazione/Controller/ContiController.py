@@ -17,6 +17,8 @@ class ContiController(QMainWindow, Ui_ContiWindow):
     def aggiorna_vista(self):
         self.combo_ordini.clear()
         self.combo_pagamento.clear()
+        self.list_prodotti.clear()
+        self.lbl_totale.setText("Totale da Pagare: 0.00 €")
 
         for m in MetodoPagamento:
             self.combo_pagamento.addItem(m.value.upper(), m)
@@ -32,8 +34,17 @@ class ContiController(QMainWindow, Ui_ContiWindow):
             return
 
         try:
+            self.list_prodotti.clear()
+            for po in ordine.getProdottiOrdinati():
+                totale_riga = po.getQuantita() * po.getPrezzo()
+                self.list_prodotti.addItem(f"{po.getQuantita()}x {po.getNome()} ({po.getPrezzo():.2f}€ cad.) - {totale_riga:.2f}€")
+            
+            if ordine.getNumeroCoperti() > 0:
+                self.list_prodotti.addItem(f"--- Coperti: {ordine.getNumeroCoperti()} ---")
+
             totale = self.primary_controller.gestore_conti.calcolaTotale(ordine)
             self.lbl_totale.setText(f"Totale da Pagare: {totale:.2f} €")
+
         except Exception as e:
             QMessageBox.critical(self, "Errore Calcola Totale", f"Si è verificato un errore: {e}")
 
