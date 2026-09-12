@@ -92,9 +92,20 @@ class OrdiniController(QMainWindow, Ui_OrdiniWindow):
             )
             return
 
-        po = ProdottoOrdinato(prodotto_obj.getNomeProdotto(), prodotto_obj.getPrezzo(), qta)
-        self.carrello.append((po, prodotto_obj))
-        self.list_riepilogo.addItem(f"{qta}x {prodotto_obj.getNomeProdotto()} ({prodotto_obj.getPrezzo():.2f}€ cad.)")
+        trovato = False
+        for po, p in self.carrello:
+            if p.getNomeProdotto() == prodotto_obj.getNomeProdotto():
+                po.setQuantita(po.getQuantita() + qta)
+                trovato = True
+                break
+
+        if not trovato:
+            po = ProdottoOrdinato(prodotto_obj.getNomeProdotto(), prodotto_obj.getPrezzo(), qta)
+            self.carrello.append((po, prodotto_obj))
+
+        self.list_riepilogo.clear()
+        for po, _ in self.carrello:
+            self.list_riepilogo.addItem(f"{po.getQuantita()}x {po.getNome()} ({po.getPrezzo():.2f}€ cad.)")
 
     def salva_ordine(self):
         if not self.carrello:

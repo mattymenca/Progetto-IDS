@@ -18,7 +18,7 @@ class GestoreMagazzino(IGestioneMagazzino):
     def rifornisciProdotto(self, prodotto, qta_aggiuntiva):
         nuova_qta = prodotto.getQuantita() + qta_aggiuntiva
         prodotto.setQuantita(nuova_qta)
-        prodotto.setStatoProdotto(StatoProdotto.RIFORNITO)
+        prodotto.aggiornaStatoProdotto()
         self.dati.salvaTutto("dati.pkl")
 
     def eliminaProdotto(self, indice_prodotto):
