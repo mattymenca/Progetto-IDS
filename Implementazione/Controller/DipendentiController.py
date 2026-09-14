@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow
-from View.dipendenti import Ui_MainWindow
+from View.dipendenti import Ui_DipendentiWindow
 
-class DipendentiController(QMainWindow, Ui_MainWindow):
+class DipendentiController(QMainWindow, Ui_DipendentiWindow):
     def __init__(self, primary_controller):
         super().__init__()
         self.setupUi(self)

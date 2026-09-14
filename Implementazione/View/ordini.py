@@ -13,6 +13,17 @@ class Ui_OrdiniWindow(object):
             QPushButton:hover { background-color: #2980b9; }
             QPushButton#btn_annulla { background-color: #e74c3c; }
             QPushButton#btn_annulla:hover { background-color: #c0392b; }
+
+            QMessageBox { background-color: #2c3e50; }
+            QMessageBox QLabel { color: #ffffff; font-size: 14px; }
+            QMessageBox QPushButton { 
+                background-color: #34495e; 
+                color: white; 
+                border: 1px solid #7f8c8d; 
+                border-radius: 4px; 
+                padding: 6px 12px; 
+            }
+            QMessageBox QPushButton:hover { background-color: #2980b9; }
         """)
         
         self.centralwidget = QtWidgets.QWidget(MainWindow)

@@ -1,8 +1,6 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-# CLASSE PER LA FINESTRA DI LOGIN
-# Strutturata esattamente come richiesto, con il suo metodo setupUi.
 class Ui_LoginWindow(object):
     def setupUi(self, LoginWindow):
         LoginWindow.setObjectName("LoginWindow")
@@ -39,6 +37,17 @@ class Ui_LoginWindow(object):
                 font-size: 16px;
                 border-radius: 5px;
             }
+
+            QMessageBox { background-color: #2c3e50; }
+            QMessageBox QLabel { color: #ffffff; font-size: 14px; }
+            QMessageBox QPushButton { 
+                background-color: #34495e; 
+                color: white; 
+                border: 1px solid #7f8c8d; 
+                border-radius: 4px; 
+                padding: 6px 12px; 
+            }
+            QMessageBox QPushButton:hover { background-color: #2980b9; }
         """)
 
         self.centralwidget = QtWidgets.QWidget(LoginWindow)

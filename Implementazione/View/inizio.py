@@ -24,6 +24,17 @@ class Ui_MainWindow(object):
             QPushButton:hover {
                 background-color: #2980b9;
             }
+
+            QMessageBox { background-color: #2c3e50; }
+            QMessageBox QLabel { color: #ffffff; font-size: 14px; }
+            QMessageBox QPushButton { 
+                background-color: #34495e; 
+                color: white; 
+                border: 1px solid #7f8c8d; 
+                border-radius: 4px; 
+                padding: 6px 12px; 
+            }
+            QMessageBox QPushButton:hover { background-color: #2980b9; }
         """)
         
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -69,4 +80,3 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Gestionale"))
-        # The button text is now set directly in the QPushButton constructor

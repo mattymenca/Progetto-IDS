@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_MainWindow(object):
+class Ui_DipendentiWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -22,6 +22,17 @@ class Ui_MainWindow(object):
             QPushButton#pushButton_indietro:hover {
                 background-color: #95a5a6;
             }
+
+            QMessageBox { background-color: #2c3e50; }
+            QMessageBox QLabel { color: #ffffff; font-size: 14px; }
+            QMessageBox QPushButton { 
+                background-color: #34495e; 
+                color: white; 
+                border: 1px solid #7f8c8d; 
+                border-radius: 4px; 
+                padding: 6px 12px; 
+            }
+            QMessageBox QPushButton:hover { background-color: #2980b9; }
         """)
         
         self.centralwidget = QtWidgets.QWidget(MainWindow)
