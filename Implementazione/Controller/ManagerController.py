@@ -34,14 +34,15 @@ class DettagliPersonaDialog(QDialog):
         layout_o.addWidget(list_o)
         tabs.addTab(tab_ordini, "Storico Ordini Presi")
 
-        # TAB 2: CONTRATTI (Se è un Dipendente)
-        if hasattr(persona, 'getStoricoContratti') and persona.getStoricoContratti():
-            tab_contratti = QWidget()
-            layout_c = QVBoxLayout(tab_contratti)
-            list_c = QListWidget()
-            list_c.setStyleSheet("background-color: #34495e; color: white;")
-            
-            for c in persona.getStoricoContratti():
+        # TAB 2: STORICO CONTRATTI
+        tab_contratti = QWidget()
+        layout_c = QVBoxLayout(tab_contratti)
+        list_c = QListWidget()
+        list_c.setStyleSheet("background-color: #34495e; color: white; font-size: 14px;")
+        
+        contratti = persona.getStoricoContratti()
+        if contratti:
+            for c in contratti:
                 tipo_obj = c.getTipoContratto()
                 tipo_str = tipo_obj.value.title() if isinstance(tipo_obj, TipoContratto) else str(tipo_obj)
                 
@@ -49,9 +50,11 @@ class DettagliPersonaDialog(QDialog):
                 d_fine_display = "---" if tipo_obj == TipoContratto.TEMPO_INDETERMINATO else c.getDataFine()
                 
                 list_c.addItem(f"Contratto: {tipo_str} | Salario: {c.getSalario():.2f}€ | Inizio: {c.getDataInizio()} - Fine: {d_fine_display}")
+        else:
+            list_c.addItem("Nessun contratto registrato per questa persona.")
             
-            layout_c.addWidget(list_c)
-            tabs.addTab(tab_contratti, "Storico Contratti")
+        layout_c.addWidget(list_c)
+        tabs.addTab(tab_contratti, "Storico Contratti")
 
         layout.addWidget(tabs)
 

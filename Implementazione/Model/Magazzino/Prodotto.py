@@ -10,7 +10,6 @@ class Prodotto:
         self.fornitore = fornitore
         self.avvisi = avvisi
         self.soglia = soglia
-        self.statoProdotto = StatoProdotto.RIFORNITO
         
         self.aggiornaStatoProdotto()
 
